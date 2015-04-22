@@ -63,7 +63,7 @@ void loop()
 
     String hold = "";
     //val = Serial.read(); // read it and store it in val
-    Serial.setTimeout(100);
+    Serial.setTimeout(50);
     hold = Serial.readString();
 
     //Serial.println("VAL: " + hold);
@@ -133,24 +133,28 @@ void loop()
     {
       motorInZ = signalInZ + 64;
     }
-    
-    if(motorInXL < 65)
+
+    if (motorInXL < 65)
       motorInXL = motorInZ;
     else
       motorInXL += signalInZ;
-    if(motorInXR < 65)
+    if (motorInXR < 65)
       motorInXR = motorInZ;
     else
       motorInXR += signalInZ;
-    if(motorInYF < 65)
+    if (motorInYF < 65)
       motorInYF = motorInZ;
     else
       motorInYF += signalInZ;
-    if(motorInYB < 65)
+    if (motorInYB < 65)
       motorInYB = motorInZ;
     else
+    {
       motorInYB += signalInZ;
-
+      motorInYF += signalInZ;
+      motorInXL += signalInZ;
+      motorInXR += signalInZ;
+    }
 
     Serial.print("XLMOTOR: ");
     Serial.println(motorInXL);
@@ -162,11 +166,12 @@ void loop()
     Serial.println(motorInYB);
     Serial.print("ZMOTOR: ");
     Serial.println(motorInZ);
-    
-    
+
+
     // Assuming value 64 is the motor at rest !!!
     if ( motorIn )
     {
+      /*
       if ( lastMotorInXL < 80 && motorInXL == 64)
       {
         lastMotorInXL -= 1;
@@ -187,19 +192,23 @@ void loop()
         lastMotorInYB -= 1;
         v.write(lastMotorInYB);
       }
-    }
-    else
-    {
-      s.write(motorInXL);
-      t.write(motorInYF);
-      u.write(motorInXR);
-      v.write(motorInYB);
-      
-    }
+      */
+      //else
+      {
+        s.write(motorInXL);
+        t.write(motorInYF);
+        u.write(motorInXR);
+        v.write(motorInYB);
+        lastMotorInXL = motorInXL;
+        lastMotorInYF = motorInYF;
+        lastMotorInXR = motorInXR;
+        lastMotorInYB = motorInYB;
+      }
 
 
+    }
+    //delay(2);
   }
-  delay(3);
 }
 
 

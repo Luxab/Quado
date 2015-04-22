@@ -53,9 +53,9 @@ public void setup() {
 // Poll for user input called from the draw() method.
 public void getUserInput() {
   //px = map(device.getSlider("X-axis").getValue(), -1, 1, 0, width);
-  flyUp = map(device.getSlider("Y Rotation").getValue()/1.725, -1, 1, 0, height);
-  flyX = map(device.getSlider("X Axis").getValue()/1.725, -1, 1, 0, width);
-  flyY = map(device.getSlider("Y Axis").getValue()/1.725,-1, 1, 0, height);
+  flyUp = map(device.getSlider("Y Rotation").getValue()/1.75, -1, 1, 0, height);
+  flyX = map(device.getSlider("X Axis").getValue()/1.75, -1, 1, 0, width);
+  flyY = map(device.getSlider("Y Axis").getValue()/1.75,-1, 1, 0, height);
   // max speed at 179.94202
 
   
