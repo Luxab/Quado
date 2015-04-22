@@ -69,7 +69,7 @@ void setup() {
   v.write(0); // set Servo V to speed 0
 
   //accelerometer stuff
-  Serial.begin(9600);
+  //Serial.begin(9600);
   Serial.println("Accelerometer Test"); Serial.println("");
   
   /* Initialise the sensor */
