@@ -4,9 +4,10 @@
 #include <Servo.h>
 
 /*
-  Accelerometer motor adjust test
+  Accelerometer motor adjustment
   Duncan Klug
   4-21-15
+  ( ͡° ͜ʖ ͡°)
 */
 
 /* Assign a unique ID to this sensor at the same time */
@@ -16,8 +17,9 @@ Servo servo1;
 Servo servo2;
 Servo servo3;
 Servo servo4;
-int potValue, high = 0, low = 1023;
 
+
+/*
 void displaySensorDetails(void)
 {
   sensor_t sensor;
@@ -33,6 +35,7 @@ void displaySensorDetails(void)
   Serial.println("");
   delay(500);
 }
+*/
 
 void setup(void) 
 {
@@ -53,7 +56,7 @@ void setup(void)
   }
   
   /* Display some basic information on this sensor */
-  displaySensorDetails();
+  //displaySensorDetails();
 }
 
 void loop(void) 
@@ -69,16 +72,16 @@ void loop(void)
  */
  
   int position;  //declares an integer with no value
+   int pval = 54; //pval -> previous value. For use with implementing into other code?
+   double s1V = 100*abs(event.acceleration.x);
+   double s3V = 100*abs(event.acceleration.x);
+   double s2V = 100*abs(event.acceleration.y);
+   double s4V = 100*abs(event.acceleration.y);
    
-   int s1V = abs(event.acceleration.x);
-   int s3V = abs(event.acceleration.x);
-   int s2V = abs(event.acceleration.y);
-   int s4V = abs(event.acceleration.y);
-   
-   int servo1Pos=map(s1V,0,12,62,180);
-   int servo2Pos=map(s2V,0,12,62,180);
-   int servo3Pos=map(s3V,0,12,62,180);
-   int servo4Pos=map(s4V,0,12,62,180);
+   double servo1Pos=map(s1V,0.0,1000.0,pval,180.0);
+   double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
+   double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
+   double servo4Pos=map(s4V,0.0,1000.0,pval,180.0);
    
    if (servo1Pos<100 && servo3Pos<100)
    {
@@ -88,8 +91,8 @@ void loop(void)
    }
    else
    {
-   servo1.write(62);
-   servo3.write(62);
+   servo1.write(100);
+   servo3.write(100);
    }
    
    if (servo2Pos<100 && servo4Pos<100)
@@ -100,10 +103,13 @@ void loop(void)
    }
    else
    {
-   servo2.write(62);
-   servo4.write(62);
+   servo2.write(100);
+   servo4.write(100);
    }
-  
-    Serial.print  ("Servo 1: " + servo1Pos + "Servo 2: "+ servo2Pos + "Servo 3: " + servo3Pos + "Servo 4: " +servo4Pos);  
+   Serial.println("");
+    Serial.print("Servo 1: "); Serial.print(servo1Pos); 
+    Serial.print("; Servo 2: "); Serial.print(servo2Pos); 
+    Serial.print("; Servo 3: "); Serial.print(servo3Pos); 
+    Serial.print("; Servo 4: "); Serial.print(servo4Pos);
   //delay(10);
 }
