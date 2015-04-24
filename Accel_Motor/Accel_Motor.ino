@@ -72,7 +72,7 @@ void loop(void)
  */
  
   int position;  //declares an integer with no value
-   int pval = 54; //pval -> previous value. For use with implementing into other code?
+   int pval = 0; //pval -> previous value. For use with implementing into other code?
    double s1V = 100*abs(event.acceleration.x);
    double s3V = 100*abs(event.acceleration.x);
    double s2V = 100*abs(event.acceleration.y);
