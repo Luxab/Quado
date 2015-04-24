@@ -63,7 +63,7 @@ void loop()
 
     String hold = "";
     //val = Serial.read(); // read it and store it in val
-    Serial.setTimeout(50);
+    Serial.setTimeout(100);
     hold = Serial.readString();
 
     //Serial.println("VAL: " + hold);
@@ -129,10 +129,20 @@ void loop()
     {
       motorInZ = 0;
     }
+
     else
     {
-      motorInZ = signalInZ + 64;
+      // add 64 normally
+      motorInZ = signalInZ;
     }
+
+    //temp code
+    /*
+    if(motorInZ > 0)
+    {
+      motorInZ = 4;
+    }
+    */
 
     if (motorInXL < 65)
       motorInXL = motorInZ;
@@ -149,12 +159,16 @@ void loop()
     if (motorInYB < 65)
       motorInYB = motorInZ;
     else
-    {
       motorInYB += signalInZ;
-      motorInYF += signalInZ;
-      motorInXL += signalInZ;
-      motorInXR += signalInZ;
-    }
+
+    if (motorInXL >= 180)
+      motorInXL = 179;
+    if (motorInXR >= 180)
+      motorInXR = 179;
+    if (motorInYB >= 180)
+      motorInYB = 179;
+    if (motorInYF >= 180)
+      motorInYF = 179;
 
     Serial.print("XLMOTOR: ");
     Serial.println(motorInXL);
@@ -167,11 +181,22 @@ void loop()
     Serial.print("ZMOTOR: ");
     Serial.println(motorInZ);
 
+    //temp code
+    /*
+    if(motorInXL > 0)
+      motorInXL = 1;
+    if(motorInXR > 0)
+      motorInXR = 1;
+    if(motorInYB > 0)
+      motorInYB = 1;
+    if(motorInYF > 0)
+      motorInYF = 1;
+    */
 
     // Assuming value 64 is the motor at rest !!!
+    /*
     if ( motorIn )
     {
-      /*
       if ( lastMotorInXL < 80 && motorInXL == 64)
       {
         lastMotorInXL -= 1;
@@ -192,23 +217,29 @@ void loop()
         lastMotorInYB -= 1;
         v.write(lastMotorInYB);
       }
-      */
-      //else
-      {
-        s.write(motorInXL);
-        t.write(motorInYF);
-        u.write(motorInXR);
-        v.write(motorInYB);
-        lastMotorInXL = motorInXL;
-        lastMotorInYF = motorInYF;
-        lastMotorInXR = motorInXR;
-        lastMotorInYB = motorInYB;
-      }
+    }
+    */
+    //else
+    {
+      if (motorInXL >= 180)
+        motorInXL = 179;
+      if (motorInXR >= 180)
+        motorInXR = 179;
+      if (motorInYB >= 180)
+        motorInYB = 179;
+      if (motorInYF >= 180)
+        motorInYF = 179;
 
+      s.write(motorInXL);
+      t.write(motorInYF);
+      u.write(motorInXR);
+      v.write(motorInYB);
 
     }
-    //delay(2);
+
+
   }
+  delay(3);
 }
 
 
