@@ -4,10 +4,10 @@
   -Scripps Ranch High School Robotics Team-
   Quadcopter_Motor_Test
   By Michael Yee
-  4/22/2015
+  Last Update : 4/24/2014
 
-  Goes hand-in-hand with Quadcopter_Controller_RegisterV03
-  Version 03
+  Goes hand-in-hand with Quadcopter_Controller_RegisterGit
+  Version XX
 */
 
 Servo s, t, u, v;
@@ -197,22 +197,22 @@ void loop()
     /*
     if ( motorIn )
     {
-      if ( lastMotorInXL < 80 && motorInXL == 64)
+      if ( lastMotorInXL < 100 && motorInXL == 0)
       {
         lastMotorInXL -= 1;
         s.write(lastMotorInXL);
       }
-      if ( lastMotorInXR < 80 && motorInXR == 64)
+      if ( lastMotorInXR < 100 && motorInXR == 0)
       {
         lastMotorInXR -= 1;
         u.write(lastMotorInXR);
       }
-      if ( lastMotorInYF < 80 && motorInYF == 64)
+      if ( lastMotorInYF < 100 && motorInYF == 0)
       {
         lastMotorInYF -= 1;
         t.write(lastMotorInYF);
       }
-      if ( lastMotorInYB < 80 && motorInYB == 64)
+      if ( lastMotorInYB < 100 && motorInYB == 0)
       {
         lastMotorInYB -= 1;
         v.write(lastMotorInYB);
@@ -234,12 +234,13 @@ void loop()
       t.write(motorInYF);
       u.write(motorInXR);
       v.write(motorInYB);
-
+      
+      lastMotorInXL = motorInXL;
+      lastMotorInXR = motorInXR;
+      lastMotorInYF = motorInYF;
+      lastMotorInYB = motorInYB;
     }
-
-
   }
-  delay(3);
 }
 
 
