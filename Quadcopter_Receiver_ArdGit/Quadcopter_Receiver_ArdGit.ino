@@ -85,12 +85,16 @@ void loop() {
     xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
     zIndex = theMessage.indexOf("Z");
+    /*
+    No More Loop, Unnecessary
     nextLoop = theMessage.substring(zIndex);
     nLoopXIndex = nextLoop.indexOf("X");
+    */
 
+    // theMessage should be X###Y###Z###
     x = theMessage.substring(xIndex + 1, yIndex);
     y = theMessage.substring(yIndex + 1, zIndex);
-    z = theMessage.substring(zIndex + 1, nLoopXIndex + zIndex);
+    z = theMessage.substring(zIndex + 1);
 
     signalInX = x.toInt() * -1;
     signalInY = y.toInt();
