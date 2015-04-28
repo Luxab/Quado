@@ -13,8 +13,6 @@
 */
 
 Servo s, t, u, v;
-int startRotorSpeed = 0; // change later
-int maxRotorSpeed = 10; // change later, start low & slow
 bool on = true;
 int val = 0; // Data received from the serial port
 int lastMotorInZ = 0, lastMotorInXL = 0, lastMotorInXR = 0,
@@ -26,9 +24,11 @@ String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
-RF24 radio(9,10); 
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 int msg[1];
+
+// EDIT WHICH PINS THE RADIO WILL BE ON
+RF24 radio(9,10); 
 
 void setup() {
 

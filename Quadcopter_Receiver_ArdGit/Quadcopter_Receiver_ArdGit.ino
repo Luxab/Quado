@@ -2,9 +2,17 @@
 #include <SPI.h>
 #include "RF24.h"
 
+/*
+  -Scripps Ranch High School Robotics Team-
+  Quadcopter Wireless Receiving
+  By Michael Yee
+  Last Update : 4/28/2015
+
+  Goes hand-in-hand with Quadcopter_Controller_Register_ArdGit
+  Version XX
+*/
+
 Servo s, t, u, v;
-int startRotorSpeed = 0; // change later
-int maxRotorSpeed = 10; // change later, start low & slow
 bool on = true;
 int val = 0; // Data received from the serial port
 int lastMotorInZ = 0, lastMotorInXL = 0, lastMotorInXR = 0,
@@ -16,15 +24,15 @@ String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
-RF24 radio(9, 10);
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 int msg[15];
 
+// EDIT WHICH PINS THE RADIO WILL BE ON
+RF24 radio(9, 10); 
+
 
 void setup() {
-  // put your setup code here, to run once:
 
-  //initialize serial communications at a 9600 baud rate
   Serial.begin(1000000); // open the serial port at 9600 bps
   establishContact();
   // send a byte to establish contact until receiver responds
@@ -57,7 +65,6 @@ void loop() {
   int motorInXL = 0, motorInXR = 0,
       motorInYF = 0, motorInYB = 0, motorInZ = 0;
   int motorInX = 0, motorInY = 0;
-  // put your main code here, to run repeatedly:
 
   String theMessage = "";
   if (radio.available())
@@ -67,14 +74,15 @@ void loop() {
     for (int i = 0; i < 15; i ++)
     {
       char theChar = msg[i];
-      theMessage += msg[i];
       if (theChar == ('C'))
       {
         break;
       }
+      theMessage += msg[i];
+      
     }
 
-    xIndex = theMessage.indexOf("X"); // ISSUE WITH indexOf()
+    xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
     zIndex = theMessage.indexOf("Z");
     nextLoop = theMessage.substring(zIndex);
