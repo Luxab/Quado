@@ -1,10 +1,12 @@
 #include <Servo.h>
+#include <SPI.h>
+#include "RF24.h"
 
 /*
   -Scripps Ranch High School Robotics Team-
-  Quadcopter_Motor_Test
+  Quadcopter Wireless Sending
   By Michael Yee
-  Last Update : 4/24/2014
+  Last Update : 4/28/2015
 
   Goes hand-in-hand with Quadcopter_Controller_RegisterGit
   Version XX
@@ -23,6 +25,10 @@ int xIndex = 0, yIndex = 0, zIndex = 0, nLoopXIndex;
 String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
+byte send;
+RF24 radio(9,10); 
+const uint64_t pipe = 0xE8E8F0F0E1LL;
+int msg[1];
 
 void setup() {
 
@@ -46,12 +52,13 @@ void setup() {
   t.write(0); // set Servo T to speed 0
   u.write(0); // set Servo U to speed 0
   v.write(0); // set Servo V to speed 0
+  
+ 
 
 }
 
 void loop()
 {
-
   int signalInX = 0, signalInY = 0, signalInZ = 0;
   int motorInXL = 0, motorInXR = 0,
       motorInYF = 0, motorInYB = 0, motorInZ = 0;
@@ -65,33 +72,57 @@ void loop()
     //val = Serial.read(); // read it and store it in val
     Serial.setTimeout(100);
     hold = Serial.readString();
-
+    String theMessage = hold;
+    
+      radio.begin();
+      radio.openWritingPipe(pipe);
+    
+    for(int i = 0; i < theMessage.length(); i ++)
+    {
+       int charToSend[1];
+      charToSend[0] = theMessage.charAt(i);
+       radio.write(charToSend,15); 
+    }
+    
+    msg[0] = 'C';  // sends a terminating string value
+    radio.write(msg,1);
+    
+    radio.powerDown();
+    delay(1);
+    radio.powerUp();
+    
+    /*
+    
     //Serial.println("VAL: " + hold);
-
+    
     xIndex = hold.indexOf("X"); // ISSUE WITH indexOf()
     yIndex = hold.indexOf("Y");
     zIndex = hold.indexOf("Z");
     nextLoop = hold.substring(zIndex);
     nLoopXIndex = nextLoop.indexOf("X");
-    /*
+    
+    /// DEBUG
     Serial.print("X: ");
     Serial.println(xIndex);
     Serial.print("Y: ");
     Serial.println(yIndex);
     Serial.print("Z: ");
     Serial.println(zIndex);
-    */
+    
+    
     x = hold.substring(xIndex + 1, yIndex);
     y = hold.substring(yIndex + 1, zIndex);
     z = hold.substring(zIndex + 1, nLoopXIndex + zIndex);
-    /*
+    
+    /// DEBUG
     Serial.print("X: ");
     Serial.println(x);
     Serial.print("Y: ");
     Serial.println(y);
     Serial.print("Z: ");
     Serial.println(z);
-    */
+    
+    
     signalInX = (x.toInt() - 64) * -1; // subtract 64 because default
     signalInY = y.toInt() - 64; // read input value is 64
     signalInZ = z.toInt() - 64;
@@ -136,13 +167,6 @@ void loop()
       motorInZ = signalInZ;
     }
 
-    //temp code
-    /*
-    if(motorInZ > 0)
-    {
-      motorInZ = 4;
-    }
-    */
 
     if (motorInXL < 65)
       motorInXL = motorInZ;
@@ -181,18 +205,7 @@ void loop()
     Serial.print("ZMOTOR: ");
     Serial.println(motorInZ);
 
-    //temp code
-    /*
-    if(motorInXL > 0)
-      motorInXL = 1;
-    if(motorInXR > 0)
-      motorInXR = 1;
-    if(motorInYB > 0)
-      motorInYB = 1;
-    if(motorInYF > 0)
-      motorInYF = 1;
-    */
-
+  
     // Assuming value 64 is the motor at rest !!!
     /*
     if ( motorIn )
@@ -218,8 +231,8 @@ void loop()
         v.write(lastMotorInYB);
       }
     }
-    */
-    //else
+    
+    else
     {
       if (motorInXL >= 180)
         motorInXL = 179;
@@ -239,8 +252,11 @@ void loop()
       lastMotorInXR = motorInXR;
       lastMotorInYF = motorInYF;
       lastMotorInYB = motorInYB;
+      
     }
+    */
   }
+  
 }
 
 
