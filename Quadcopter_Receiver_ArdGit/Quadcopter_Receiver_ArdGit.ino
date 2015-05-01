@@ -69,6 +69,7 @@ void loop() {
   String theMessage = "";
   if (radio.available())
   {
+    radio.startListening();
     radio.read(msg, 15);
 
     for (int i = 0; i < 15; i ++)
@@ -78,9 +79,10 @@ void loop() {
       {
         break;
       }
-      theMessage += msg[i];
+      theMessage += theChar;
       
     }
+    
 
     xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
@@ -154,6 +156,30 @@ void loop() {
     lastMotorInXR = motorInXR;
     lastMotorInYF = motorInYF;
     lastMotorInYB = motorInYB;
+    
+    // begin writing outputs -- test
+    
+    radio.stopListening();
+    String sendMessage = x+y+z;
+    
+    radio.openWritingPipe(pipe);
+    
+    for (int i = 0; i < sendMessage.length(); i ++)
+    {
+      int charToSend[1];
+      charToSend[0] = sendMessage.charAt(i);
+      radio.write(charToSend, 15);
+    }
+    
+    msg[0] = 'C';  // sends a terminating string value
+    radio.write(msg, 1);
+
+    radio.powerDown();
+    delay(1);
+    radio.powerUp();
+    
+    // end writing 
+    
     
   }
 }
