@@ -25,18 +25,29 @@ int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
 const uint64_t pipe = 0xE8E8F0F0E1LL;
+byte addresses[][6] = {"1Node","2Node"};
 int msg[1];
+String hold = "X123Y456Z789";
 
 // EDIT WHICH PINS THE RADIO WILL BE ON
-RF24 radio (12, 13);
+RF24 radio (9,10);
 
 void setup() {
-
+  
+  radio.begin();
+  
   //initialize serial communications at a 9600 baud rate
-  Serial.begin(9600); // open the serial port at 9600 bps
-        //establishContact();
+  Serial.begin(4800); // open the serial port at 9600 bps
+
+  //establishContact();
   // send a byte to establish contact until receiver responds
   //
+
+  
+  //radio.openWritingPipe(addresses[1]);
+
+ radio.openWritingPipe(addresses[0]);
+    radio.openReadingPipe(1,addresses[1]);
 
   pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
   pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
@@ -65,57 +76,69 @@ void loop()
   int motorInX = 0, motorInY = 0;
 
 
+
   //if (Serial.available() > 0)
-  { // If data is available to read,
+  //{ // If data is available to read,
 
-    String hold = "X123Y90Z65C";
-    int indexOfC = hold.indexOf("C");
-    //val = Serial.read(); // read it and store it in val
-    Serial.setTimeout(100);
-    hold = hold.substring(0,indexOfC);
-    //hold = Serial.readString();
-    String theMessage = hold;
+  //hold = "X123Y90Z65C";
+  //Serial.println("HOLD: ");
+  //Serial.println(hold);
+  int indexOfC = hold.indexOf("C");
 
-    radio.begin();
-    radio.openWritingPipe(pipe);
+  //val = Serial.read(); // read it and store it in val
+  //Serial.setTimeout(100);
 
-    for (int i = 0; i < hold.length(); i ++)
-    {
-      char charToSend[1];
-      charToSend[0] = theMessage.charAt(i);
-      Serial.println(charToSend[0]);
-      radio.write(charToSend, 15);
-    }
+  hold = hold.substring(0, indexOfC);
+  //hold = Serial.readString();
+  String theMessage = hold;
+  //Serial.println("MESSAGE: ");
+  //Serial.println(hold);
 
-    msg[0] = 'C';  // sends a terminating string value
-    radio.write(msg, 1);
-    
-    // begin reading -- test
 
+  
+
+  for (int i = 0; i < hold.length(); i ++)
+  {
+    char charToSend[1];
+    charToSend[0] = theMessage.charAt(i);
+    Serial.println(charToSend[0]);
+    radio.write(charToSend, 15);
+  }
+
+  msg[0] = 'C';  // sends a terminating string value
+  radio.write(msg, 1);
+  
+  //delay(5000);
+
+  delay(1);
+
+  // begin reading -- test
+  /*
     radio.openReadingPipe(1, pipe);
     radio.startListening();
 
     int messageRead[15];
     radio.read(messageRead, 15);
-    
+
     String message = "";
-    for(int i = 0; i < 15; i++)
+    for (int i = 0; i < 15; i++)
     {
-     message += "" + messageRead[i];
+      message += "" + messageRead[i];
     }
-    
+
     radio.stopListening();
-    
-    // end reading     
+  */
+  // end reading
 
-    radio.powerDown();
-    delay(1);
-    radio.powerUp();
+  //radio.powerDown();
+  //delay(1);
+  //radio.powerUp();
+  /*
+    Serial.println("RECEIEVED: ");
+    Serial.print("" + message);
+  */
 
-    Serial.println(message);
-
-
-  }
+  //}
 
 
   /*
@@ -281,10 +304,6 @@ void loop()
     lastMotorInYB = motorInYB;
   */
 }
-
-
-
-
 
 
 void establishContact() {
