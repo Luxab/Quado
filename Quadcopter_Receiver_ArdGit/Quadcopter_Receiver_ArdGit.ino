@@ -28,6 +28,7 @@ byte send;
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 byte addresses[][6] = {"1Node", "2Node"};
 int msg[15];
+String theMessage = "";
 
 // EDIT WHICH PINS THE RADIO WILL BE ON
 RF24 radio(9, 10);
@@ -37,7 +38,7 @@ void setup() {
 
   radio.begin();
 
-  Serial.begin(4800); // open the serial port at 9600 bps
+  Serial.begin(115200); // open the serial port at 9600 bps
   //establishContact();
   // send a byte to establish contact until receiver responds
   //
@@ -69,8 +70,7 @@ void setup() {
 
 void loop() {
 
-  String theMessage = "";
-  //char a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
+  //String x = "";
 
   int signalInX = 0, signalInY = 0, signalInZ = 0;
   int motorInXL = 0, motorInXR = 0,
@@ -81,48 +81,22 @@ void loop() {
   if (radio.available())
   {
 
-    for (int i = 0; i < 15; i ++)
+    radio.read(msg, 1);
+
+    char theChar = msg[0];
+
+    if (theChar != ('C'))
     {
-      radio.read(msg, 15);
-
-      char theChar = msg[i];
-      
-      /*
-      char a = msg[0];
-      char b = msg[1];
-      char c = msg[2];
-      char d = msg[3];
-      char e = msg[4];
-      char f = msg[5];
-      char g = msg[6];
-      char h = msg[7];
-      char p = msg[8];
-      char j = msg[9];
-      char k = msg[10];
-      char l = msg[11];
-      char m = msg[12];
-      char n = msg[13];
-      char o = msg[14];
-      */
-      
-      
-      if (theChar == ('C'))
-      {
-        break;
-
-      }
-      
-      String x = String(theChar);
-      theMessage += x;
-      
-      //theMessage = a+""+b+""+c+""+d+""+e+""+f+""+g+""+h+""+p+""+j+""+k+""+l+""+m+""+n+""+o;
-      //theMessage = ""+a;
+      x.concat(theChar);
+      theMessage.concat(theChar);
+      delay(4);
     }
-    Serial.println(theMessage);
-    
-    //delay(2500);
-
-    xIndex = theMessage.indexOf("X");
+    else
+    {
+      
+      // INSERT MOTOR CODE HERE?
+      
+      xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
     zIndex = theMessage.indexOf("Z");
     /*
@@ -139,6 +113,10 @@ void loop() {
     signalInX = x.toInt() * -1;
     signalInY = y.toInt();
     signalInZ = z.toInt();
+    
+    Serial.println(signalInX);
+    Serial.println(signalInY);
+    Serial.println(signalInZ);
 
     if (signalInX < 0)
     {
@@ -196,7 +174,6 @@ void loop() {
     lastMotorInYB = motorInYB;
 
 
-
     /*
     // begin writing outputs -- test
 
@@ -204,7 +181,6 @@ void loop() {
     String sendMessage = x+y+z;
 
     radio.openWritingPipe(pipe);
-
     for (int i = 0; i < sendMessage.length(); i ++)
     {
       int charToSend[1];
@@ -222,6 +198,13 @@ void loop() {
 
     // end writing
 
+
+      
+      
+      
+      Serial.println(theMessage);
+      theMessage = "";
+    }
 
   }
   else
