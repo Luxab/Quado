@@ -1,4 +1,3 @@
-
 #include <Servo.h>
 #include <SPI.h>
 #include "RF24.h"
@@ -39,7 +38,7 @@ void setup() {
   radio.begin();
 
   Serial.begin(115200); // open the serial port at 9600 bps
-  //establishContact();
+  establishContact();
   // send a byte to establish contact until receiver responds
   //
 

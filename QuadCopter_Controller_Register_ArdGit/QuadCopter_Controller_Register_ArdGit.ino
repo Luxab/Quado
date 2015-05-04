@@ -6,7 +6,7 @@
   -Scripps Ranch High School Robotics Team-
   Quadcopter Wireless Sending
   By Michael Yee
-  Last Update : 4/28/2015
+  Last Update : 5/4/2015
 
   Goes hand-in-hand with Quadcopter_Controller_RegisterGit
   Version XX
@@ -24,18 +24,20 @@ String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
-const uint64_t pipe = 0xE8E8F0F0E1LL;
-byte addresses[][6] = {"1Node","2Node"};
+//const uint64_t pipe = 0xE8E8F0F0E1LL;
+//const uint64_t pipe2 = 0xF0F0F0F0D2LL;
+//uint64_t addresses[] = {0xABABABABABLL, 0xC3C3C3C3C3LL};
+byte addresses[][6] = {"1Node", "2Node"};
 int msg[1];
-String hold = "X100Y150Z50";
+String hold;
 
 // EDIT WHICH PINS THE RADIO WILL BE ON
-RF24 radio (9,10);
+RF24 radio (9, 10);
 
 void setup() {
-  
+
   radio.begin();
-  
+
   //initialize serial communications at a 9600 baud rate
   Serial.begin(115200); // open the serial port at 9600 bps
 
@@ -43,27 +45,28 @@ void setup() {
   // send a byte to establish contact until receiver responds
   //
 
-  
-  //radio.openWritingPipe(addresses[1]);
 
- radio.openWritingPipe(addresses[0]);
-    radio.openReadingPipe(1,addresses[1]);
-/*
-  pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
-  pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
-  pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
-  pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
+  //radio.openWritingPipe(pipe2);
+  //radio.openReadingPipe(1, pipe2);
 
-  s.attach(9); // attaches Servo S to PIN 9
-  t.attach(10); // attaches Servo T to PIN 10
-  u.attach(11); // attaches Servo U to PIN 11
-  v.attach(12); // attaches Servo V to PIN 12
+  radio.openWritingPipe(addresses[0]);
+  radio.openReadingPipe(1,addresses[1]);
+  /*
+    pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
+    pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
+    pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
+    pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
 
-  s.write(0); // set Servo S to speed 0
-  t.write(0); // set Servo T to speed 0
-  u.write(0); // set Servo U to speed 0
-  v.write(0); // set Servo V to speed 0
-*/
+    s.attach(9); // attaches Servo S to PIN 9
+    t.attach(10); // attaches Servo T to PIN 10
+    u.attach(11); // attaches Servo U to PIN 11
+    v.attach(12); // attaches Servo V to PIN 12
+
+    s.write(0); // set Servo S to speed 0
+    t.write(0); // set Servo T to speed 0
+    u.write(0); // set Servo U to speed 0
+    v.write(0); // set Servo V to speed 0
+  */
 
 
 }
@@ -78,36 +81,35 @@ void loop()
 
 
   //if (Serial.available() > 0)
-  //{ // If data is available to read,
+  { // If data is available to read,
 
-  //hold = "X123Y90Z65C";
-  //Serial.println("HOLD: ");
-  //Serial.println(hold);
-  int indexOfC = hold.indexOf("C");
+    hold = "X123Y90Z65C";
+    //Serial.println("HOLD: ");
+    //Serial.println(hold);
 
-  //val = Serial.read(); // read it and store it in val
-  //Serial.setTimeout(100);
+    //hold = Serial.readString(); // read it and store it in val
+    Serial.println("HOLD" + hold);
+    Serial.setTimeout(200);
+    int indexOfC = hold.indexOf("C");
+    hold = hold.substring(0, indexOfC);
+    //hold = Serial.readString();
+    String theMessage = hold;
+    Serial.println(theMessage);
 
-  hold = hold.substring(0, indexOfC);
-  //hold = Serial.readString();
-  String theMessage = hold;
-  //Serial.println("MESSAGE: ");
-  //Serial.println(hold);
 
 
-  
 
-  for (int i = 0; i < hold.length(); i ++)
-  {
-    char charToSend[1];
-    charToSend[0] = theMessage.charAt(i);
-    Serial.println(charToSend[0]);
-    radio.write(charToSend, 15);
+    for (int i = 0; i < hold.length(); i ++)
+    {
+      char charToSend[1];
+      charToSend[0] = theMessage.charAt(i);
+      Serial.println(charToSend[0]);
+      radio.write(charToSend, 15);
+    }
+
+    msg[0] = 'C';  // sends a terminating string value
+    radio.write(msg, 1);
   }
-
-  msg[0] = 'C';  // sends a terminating string value
-  radio.write(msg, 1);
-  
   //delay(10);
 
   // begin reading -- test
