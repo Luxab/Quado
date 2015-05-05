@@ -24,9 +24,6 @@ String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
-//const uint64_t pipe = 0xE8E8F0F0E1LL;
-//const uint64_t pipe2 = 0xF0F0F0F0D2LL;
-//uint64_t addresses[] = {0xABABABABABLL, 0xC3C3C3C3C3LL};
 byte addresses[][6] = {"1Node", "2Node"};
 const uint64_t pipe = uint64_t(addresses);
 int msg[1];
@@ -42,16 +39,16 @@ void setup() {
   //initialize serial communications at a 9600 baud rate
   Serial.begin(115200); // open the serial port at 9600 bps
 
-  //establishContact();
+  establishContact();
   // send a byte to establish contact until receiver responds
-  //
-
+  
 
   radio.openWritingPipe(pipe);
   radio.openReadingPipe(1, pipe);
 
   //radio.openWritingPipe(addresses[0]);
   //radio.openReadingPipe(1,addresses[1]);
+<<<<<<< HEAD
 
   /*
     pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
@@ -70,6 +67,8 @@ void setup() {
     v.write(0); // set Servo V to speed 0
   */
 
+=======
+>>>>>>> origin/master
 
 }
 
@@ -82,16 +81,16 @@ void loop()
 
 
 
-  //if (Serial.available() > 0)
+  if (Serial.available() > 0)
   { // If data is available to read,
 
-    hold = "X123Y90Z65C";
     //Serial.println("HOLD: ");
     //Serial.println(hold);
-
-    //hold = Serial.readString(); // read it and store it in val
-    Serial.println("HOLD" + hold);
+    
     Serial.setTimeout(200);
+    hold = Serial.readString(); // read it and store it in val
+    //Serial.println("HOLD" + hold);
+    
     int indexOfC = hold.indexOf("C");
     hold = hold.substring(0, indexOfC);
     //hold = Serial.readString();
@@ -140,171 +139,6 @@ void loop()
     Serial.print("" + message);
   */
 
-  //}
-
-
-  /*
-
-  //Serial.println("VAL: " + hold);
-
-  xIndex = hold.indexOf("X"); // ISSUE WITH indexOf()
-  yIndex = hold.indexOf("Y");
-  zIndex = hold.indexOf("Z");
-  nextLoop = hold.substring(zIndex);
-  nLoopXIndex = nextLoop.indexOf("X");
-
-  /// DEBUG
-  Serial.print("X: ");
-  Serial.println(xIndex);
-  Serial.print("Y: ");
-  Serial.println(yIndex);
-  Serial.print("Z: ");
-  Serial.println(zIndex);
-
-
-  x = hold.substring(xIndex + 1, yIndex);
-  y = hold.substring(yIndex + 1, zIndex);
-  z = hold.substring(zIndex + 1, nLoopXIndex + zIndex);
-
-  /// DEBUG
-  Serial.print("X: ");
-  Serial.println(x);
-  Serial.print("Y: ");
-  Serial.println(y);
-  Serial.print("Z: ");
-  Serial.println(z);
-
-
-  signalInX = (x.toInt() - 64) * -1; // subtract 64 because default
-  signalInY = y.toInt() - 64; // read input value is 64
-  signalInZ = z.toInt() - 64;
-
-  Serial.print("XSIGNAL: ");
-  Serial.println(signalInX);
-  Serial.print("YSIGNAL: ");
-  Serial.println(signalInY);
-  Serial.print("ZSIGNAL: ");
-  Serial.println(signalInZ);
-
-  if (signalInX < 0)
-  {
-    motorInXL = (signalInX * -1) + 64 - 10;
-    motorInXR = (signalInX * -1) + 64;
-  }
-  else if (signalInX > 0)
-  {
-    motorInXL = (signalInX) + 64 + 4;
-    motorInXR = (signalInX) + 64 + 4 - 10;
-  }
-
-  if (signalInY < 0)
-  {
-    motorInYB = (signalInY * -1) + 64 + 4 - 10;
-    motorInYF = (signalInY * -1) + 64 + 4;
-  }
-  if (signalInY > 0)
-  {
-    motorInYB = (signalInY) + 64;
-    motorInYF = (signalInY) + 64 - 10;
-  }
-
-  if (signalInZ < 0)
-  {
-    motorInZ = 0;
-  }
-
-  else
-  {
-    // add 64 normally
-    motorInZ = signalInZ;
-  }
-
-
-  if (motorInXL < 65)
-    motorInXL = motorInZ;
-  else
-    motorInXL += signalInZ;
-  if (motorInXR < 65)
-    motorInXR = motorInZ;
-  else
-    motorInXR += signalInZ;
-  if (motorInYF < 65)
-    motorInYF = motorInZ;
-  else
-    motorInYF += signalInZ;
-  if (motorInYB < 65)
-    motorInYB = motorInZ;
-  else
-    motorInYB += signalInZ;
-
-  if (motorInXL >= 180)
-    motorInXL = 179;
-  if (motorInXR >= 180)
-    motorInXR = 179;
-  if (motorInYB >= 180)
-    motorInYB = 179;
-  if (motorInYF >= 180)
-    motorInYF = 179;
-
-  Serial.print("XLMOTOR: ");
-  Serial.println(motorInXL);
-  Serial.print("XRMOTOR: ");
-  Serial.println(motorInXR);
-  Serial.print("YFMOTOR: ");
-  Serial.println(motorInYF);
-  Serial.print("YBMOTOR: ");
-  Serial.println(motorInYB);
-  Serial.print("ZMOTOR: ");
-  Serial.println(motorInZ);
-
-
-  // Assuming value 64 is the motor at rest !!!
-  /*
-  if ( motorIn )
-  {
-    if ( lastMotorInXL < 100 && motorInXL == 0)
-    {
-      lastMotorInXL -= 1;
-      s.write(lastMotorInXL);
-    }
-    if ( lastMotorInXR < 100 && motorInXR == 0)
-    {
-      lastMotorInXR -= 1;
-      u.write(lastMotorInXR);
-    }
-    if ( lastMotorInYF < 100 && motorInYF == 0)
-    {
-      lastMotorInYF -= 1;
-      t.write(lastMotorInYF);
-    }
-    if ( lastMotorInYB < 100 && motorInYB == 0)
-    {
-      lastMotorInYB -= 1;
-      v.write(lastMotorInYB);
-    }
-  }
-
-  else
-  {
-    if (motorInXL >= 180)
-      motorInXL = 179;
-    if (motorInXR >= 180)
-      motorInXR = 179;
-    if (motorInYB >= 180)
-      motorInYB = 179;
-    if (motorInYF >= 180)
-      motorInYF = 179;
-
-    s.write(motorInXL);
-    t.write(motorInYF);
-    u.write(motorInXR);
-    v.write(motorInYB);
-
-    lastMotorInXL = motorInXL;
-    lastMotorInXR = motorInXR;
-    lastMotorInYF = motorInYF;
-    lastMotorInYB = motorInYB;
-  */
 }
 
 
