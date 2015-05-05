@@ -50,6 +50,7 @@ void setup() {
   //radio.openReadingPipe(1,addresses[1]);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
   
@@ -71,6 +72,8 @@ void setup() {
     v.write(0); // set Servo V to speed 0
   */
 
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
 
