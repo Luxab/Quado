@@ -49,7 +49,11 @@ void setup() {
   //radio.openWritingPipe(addresses[0]);
   //radio.openReadingPipe(1,addresses[1]);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> parent of 14e484e... I DIDN'T MAKE ANY CHANGES
   /*
     pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
     pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
