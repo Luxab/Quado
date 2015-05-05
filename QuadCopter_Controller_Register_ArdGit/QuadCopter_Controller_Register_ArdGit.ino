@@ -52,7 +52,7 @@ void setup() {
 
   //radio.openWritingPipe(addresses[0]);
   //radio.openReadingPipe(1,addresses[1]);
-  
+
   /*
     pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
     pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
