@@ -28,6 +28,7 @@ byte send;
 //const uint64_t pipe2 = 0xF0F0F0F0D2LL;
 //uint64_t addresses[] = {0xABABABABABLL, 0xC3C3C3C3C3LL};
 byte addresses[][6] = {"1Node", "2Node"};
+const uint64_t pipe = uint64_t(addresses);
 int msg[1];
 String hold;
 
@@ -46,11 +47,12 @@ void setup() {
   //
 
 
-  //radio.openWritingPipe(pipe2);
-  //radio.openReadingPipe(1, pipe2);
+  radio.openWritingPipe(pipe);
+  radio.openReadingPipe(1, pipe);
 
-  radio.openWritingPipe(addresses[0]);
-  radio.openReadingPipe(1,addresses[1]);
+  //radio.openWritingPipe(addresses[0]);
+  //radio.openReadingPipe(1,addresses[1]);
+  
   /*
     pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
     pinMode(10, OUTPUT); // sets Pin 10 to Output [?]

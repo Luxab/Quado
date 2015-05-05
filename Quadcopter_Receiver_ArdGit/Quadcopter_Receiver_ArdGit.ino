@@ -26,6 +26,7 @@ bool motorIn = true;
 byte send;
 const uint64_t pipe = 0xE8E8F0F0E1LL;
 byte addresses[][6] = {"1Node", "2Node"};
+const uint64_t pipe = uint64_t(addresses);
 int msg[15];
 String theMessage = "";
 
@@ -41,9 +42,12 @@ void setup() {
   establishContact();
   // send a byte to establish contact until receiver responds
   //
-
-  radio.openWritingPipe(addresses[1]);
-  radio.openReadingPipe(1, addresses[0]);
+  
+   radio.openWritingPipe(pipe);
+  radio.openReadingPipe(1, pipe);
+  
+  //radio.openWritingPipe(addresses[1]);
+  //radio.openReadingPipe(1, addresses[0]);
   //radio.openReadingPipe(1, addresses[0]);
   radio.startListening();
 
