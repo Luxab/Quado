@@ -24,7 +24,6 @@ String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
 byte send;
-const uint64_t pipe = 0xE8E8F0F0E1LL;
 byte addresses[][6] = {"1Node", "2Node"};
 const uint64_t pipe = uint64_t(addresses);
 int msg[15];
@@ -213,6 +212,17 @@ void loop() {
   else
   {
     Serial.println("No Radio.");
+    Serial.println(lastMotorInXL);
+    Serial.println(lastMotorInYF);
+    Serial.println(lastMotorInXR);
+    Serial.println(lastMotorInYB);
+    
+    s.write( lastMotorInXL);
+    t.write( lastMotorInYF);
+    u.write( lastMotorInXR);
+    v.write( lastMotorInYB);
+    
+    
   }
 
 }

@@ -48,27 +48,6 @@ void setup() {
 
   //radio.openWritingPipe(addresses[0]);
   //radio.openReadingPipe(1,addresses[1]);
-<<<<<<< HEAD
-
-  /*
-    pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
-    pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
-    pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
-    pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
-
-    s.attach(9); // attaches Servo S to PIN 9
-    t.attach(10); // attaches Servo T to PIN 10
-    u.attach(11); // attaches Servo U to PIN 11
-    v.attach(12); // attaches Servo V to PIN 12
-
-    s.write(0); // set Servo S to speed 0
-    t.write(0); // set Servo T to speed 0
-    u.write(0); // set Servo U to speed 0
-    v.write(0); // set Servo V to speed 0
-  */
-
-=======
->>>>>>> origin/master
 
 }
 
