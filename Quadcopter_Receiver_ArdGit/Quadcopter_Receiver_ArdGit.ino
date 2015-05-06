@@ -164,7 +164,12 @@ void loop() {
       motorInYB = 179;
     if (motorInYF >= 180)
       motorInYF = 179;
-
+    
+    Serial.println("MotorInXL: " + motorInXL);
+    Serial.println("MotorInYF: " + motorInYF);
+    Serial.println("MotorInXR: " + motorInXR);
+    Serial.println("MotorInYB: " + motorInYB);
+    
     s.write(motorInXL);
     t.write(motorInYF);
     u.write(motorInXR);
@@ -200,14 +205,7 @@ void loop() {
 
     // end writing
 
-
-      
-      
-      
-      Serial.println(theMessage);
-      theMessage = "";
     }
-
   }
   else
   {
