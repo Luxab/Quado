@@ -112,9 +112,9 @@ void loop() {
     y = theMessage.substring(yIndex + 1, zIndex);
     z = theMessage.substring(zIndex + 1);
 
-    signalInX = (x.toInt() - 64) * -1;
-    signalInY = y.toInt() - 64;
-    signalInZ = z.toInt() - 64;
+    signalInX = x.toInt() * -1;
+    signalInY = y.toInt();
+    signalInZ = z.toInt();
     
     Serial.println(signalInX);
     Serial.println(signalInY);
