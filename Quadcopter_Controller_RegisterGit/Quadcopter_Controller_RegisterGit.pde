@@ -151,23 +151,6 @@ public void serialEvent( Serial myPort) {
     }
   }
 }
-/*
-public byte getLen(int num)
-{
-  String strLen = "";
-  
-  strLen = "" + num;
-  if(strLen.length() == 2)
-  {
-   sendLen = 'A'; 
-  }
-  else if(strLen.length() == 3)
-  {
-    sendLen = 'B';
-  }
- return  sendLen;
-}
-*/
 
 public void draw() {
   getUserInput(); // Polling
