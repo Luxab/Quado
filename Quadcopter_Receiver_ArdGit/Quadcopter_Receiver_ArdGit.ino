@@ -211,7 +211,7 @@ void loop() {
   }
   else
   {
-    Serial.println("No Radio.");
+    //Serial.println("No Radio.");
     Serial.println(lastMotorInXL);
     Serial.println(lastMotorInYF);
     Serial.println(lastMotorInXR);
