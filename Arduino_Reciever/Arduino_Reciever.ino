@@ -5,10 +5,11 @@
 /*
   -Scripps Ranch High School Robotics Team-
   Quadcopter Wireless Receiving
-  By Michael Yee
-  Last Update : 4/28/2015
-  Goes hand-in-hand with Quadcopter_Controller_Register_ArdGit
+  By Michael Yee && Duncan Klug
+  Last Update : 5/11/2015
+  Recieves data from Controller_ArduinoRegister
   Version XX
+  ( ͡° ͜ʖ ͡°)
 */
 
 Servo s, t, u, v;
@@ -28,9 +29,29 @@ const uint64_t pipe = uint64_t(addresses);
 int msg[15];
 String theMessage = "";
 
+  int signalInX = 0, signalInY = 0, signalInZ = 0; // them data value instance fields
+  int motorInXL = 0, motorInXR = 0,
+      motorInYF = 0, motorInYB = 0, motorInZ = 0;
+  int motorInX = 0, motorInY = 0;
+  
+  int def = 0;
+
+bool SteerMode = false; // Are we steering, or should we be using the stablization code?
+
 // EDIT WHICH PINS THE RADIO WILL BE ON
 RF24 radio(9, 10);
 
+void areWeSteering() // Are we steering? defined by the boolean SteerMode
+{
+  if (signalInX == def && signalInY == def && signalInZ == def)
+  {
+   SteerMode = false;
+  }
+  else
+  {
+   SteerMode = true; 
+  }
+}
 
 void setup() {
 
@@ -67,14 +88,15 @@ void setup() {
 
 }
 
-void loop() {
+void loop() //does everything basically
+{
 
   //String x = "";
 
-  int signalInX = 0, signalInY = 0, signalInZ = 0;
-  int motorInXL = 0, motorInXR = 0,
+  signalInX = 0, signalInY = 0, signalInZ = 0;
+  motorInXL = 0, motorInXR = 0,
       motorInYF = 0, motorInYB = 0, motorInZ = 0;
-  int motorInX = 0, motorInY = 0;
+  motorInX = 0, motorInY = 0;
 
 
   if (radio.available())
@@ -123,6 +145,9 @@ void loop() {
     // DEFAULT SIGNALS :  X -64, Y 64, Z 64
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
 
+// I'm not sure what this if/else tree does, Michael can explain it
+// also wouldn't this crash if signalInX or signalInY were == 0?
+
     if (signalInX < 0)
     {
       motorInXL = (signalInX * -1) - 5;
@@ -159,6 +184,7 @@ void loop() {
     motorInYF += signalInZ;
     motorInYB += signalInZ;
 
+//Capping the value output to 179 to prevent accidental unwanted calibration
     if (motorInXL >= 180)
       motorInXL = 179;
     if (motorInXR >= 180)
@@ -168,7 +194,7 @@ void loop() {
     if (motorInYF >= 180)
       motorInYF = 179;
     
-    
+//Readout keeping us out of the dark
     Serial.print("MotorInXL: ");
     Serial.println(motorInXL);
     Serial.print("MotorInYF: ");
@@ -178,7 +204,7 @@ void loop() {
     Serial.print("MotorInYB: ");
     Serial.println(motorInYB);
     
-    
+//Writing them servo values to the servos
     s.write(motorInXL);
     t.write(motorInYF);
     u.write(motorInXR);
@@ -214,7 +240,7 @@ void loop() {
     
     }
   }
-  else
+  else // if no connection to the controller, then you have to do something I guess
   {
     Serial.println("No Radio.");
     Serial.println(lastMotorInXL);
