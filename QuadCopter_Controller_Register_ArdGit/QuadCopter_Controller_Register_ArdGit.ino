@@ -1,4 +1,4 @@
-#include <Servo.h>
+  #include <Servo.h>
 #include <SPI.h>
 #include "RF24.h"
 
@@ -79,13 +79,14 @@ void loop()
 
 
 
-  if (Serial.available() > 0)
+ //if (Serial.available() > 0)
   { // If data is available to read,
 
     //Serial.println("HOLD: ");
     //Serial.println(hold);
     
-    Serial.setTimeout(200);
+    Serial.setTimeout(50);
+    //hold = "X123Y123Z123";
     hold = Serial.readString(); // read it and store it in val
     //Serial.println("HOLD" + hold);
     
@@ -143,6 +144,6 @@ void loop()
 void establishContact() {
   while (Serial.available() <= 0) {
     Serial.println("A");   // send a capital A
-    delay(50);
+    delay(25);
   }
 }

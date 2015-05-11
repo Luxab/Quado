@@ -39,7 +39,7 @@ ControlSlider slider;
 public void setup() {
   size(400, 400);
   String portName = Serial.list()[0];              //list serial ports, save the first one as portName
-  myPort = new Serial(this, "COM5", 115200); 
+  myPort = new Serial(this, portName, 115200); 
   control = ControlIO.getInstance(this);
   device = control.getDevice("Controller (XUSB Gamepad)");
   //device = control.getDevice("Mouse");
@@ -137,7 +137,7 @@ public void serialEvent( Serial myPort) {
       }
     } else { //if we've already established contact, keep getting and parsing data
     
-      println("SENDING - sendX: " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
+      //println("SENDING - sendX: " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
       //myPort.write(); // hopefully sends "A" or "B" but may send jibberish or numbers
       myPort.write("X"+flyUpX+"Y"+flyUpY+"Z"+flyUpZ); // sends X,Y,Z to Serial
       println("SENT - sendX:    " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);

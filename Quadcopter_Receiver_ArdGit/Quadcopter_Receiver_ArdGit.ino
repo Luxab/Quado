@@ -7,7 +7,6 @@
   Quadcopter Wireless Receiving
   By Michael Yee
   Last Update : 4/28/2015
-
   Goes hand-in-hand with Quadcopter_Controller_Register_ArdGit
   Version XX
 */
@@ -55,12 +54,10 @@ void setup() {
   pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
   pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
   pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
-
   s.attach(9); // attaches Servo S to PIN 9
   t.attach(10); // attaches Servo T to PIN 10
   u.attach(11); // attaches Servo U to PIN 11
   v.attach(12); // attaches Servo V to PIN 12
-
   s.write(0); // set Servo S to speed 0
   t.write(0); // set Servo T to speed 0
   u.write(0); // set Servo U to speed 0
@@ -86,19 +83,21 @@ void loop() {
     radio.read(msg, 1);
 
     char theChar = msg[0];
-
+    
+    //Serial.println(theChar);
+    
     if (theChar != ('C'))
     {
       x.concat(theChar);
       theMessage.concat(theChar);
-      delay(4);
+      delay(2);
     }
     else
     {
-      
+      //Serial.println(theMessage);
       // INSERT MOTOR CODE HERE?
       
-      xIndex = theMessage.indexOf("X");
+    xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
     zIndex = theMessage.indexOf("Z");
     /*
@@ -112,13 +111,17 @@ void loop() {
     y = theMessage.substring(yIndex + 1, zIndex);
     z = theMessage.substring(zIndex + 1);
 
-    signalInX = x.toInt() * -1;
-    signalInY = y.toInt();
-    signalInZ = z.toInt();
+    signalInX = x.toInt() - 64;
+    signalInY = y.toInt() - 64;
+    signalInZ = z.toInt() - 64;
+    
     
     Serial.println(signalInX);
     Serial.println(signalInY);
     Serial.println(signalInZ);
+    
+    // DEFAULT SIGNALS :  X -64, Y 64, Z 64
+    // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
 
     if (signalInX < 0)
     {
@@ -142,13 +145,13 @@ void loop() {
       motorInYF = signalInY - 10;
     }
 
-    if (signalInZ < 0)
+    if (signalInZ <= 0)
     {
-      motorInZ = 0;
+      signalInZ = 0;
     }
     else
     {
-      motorInZ = signalInZ;
+      //signalInZ = signalInZ;
     }
 
     motorInXL += signalInZ;
@@ -165,10 +168,16 @@ void loop() {
     if (motorInYF >= 180)
       motorInYF = 179;
     
-    Serial.println("MotorInXL: " + motorInXL);
-    Serial.println("MotorInYF: " + motorInYF);
-    Serial.println("MotorInXR: " + motorInXR);
-    Serial.println("MotorInYB: " + motorInYB);
+    
+    Serial.print("MotorInXL: ");
+    Serial.println(motorInXL);
+    Serial.print("MotorInYF: ");
+    Serial.println(motorInYF);
+    Serial.print("MotorInXR: ");
+    Serial.println(motorInXR);
+    Serial.print("MotorInYB: ");
+    Serial.println(motorInYB);
+    
     
     s.write(motorInXL);
     t.write(motorInYF);
@@ -183,10 +192,8 @@ void loop() {
 
     /*
     // begin writing outputs -- test
-
     radio.stopListening();
     String sendMessage = x+y+z;
-
     radio.openWritingPipe(pipe);
     for (int i = 0; i < sendMessage.length(); i ++)
     {
@@ -194,22 +201,22 @@ void loop() {
       charToSend[0] = sendMessage.charAt(i);
       radio.write(charToSend, 15);
     }
-
     msg[0] = 'C';  // sends a terminating string value
     radio.write(msg, 1);
-
     */
     //radio.powerDown();
     //delay(1);
     //radio.powerUp();
 
     // end writing
-
+    
+    theMessage = "";
+    
     }
   }
   else
   {
-    //Serial.println("No Radio.");
+    Serial.println("No Radio.");
     Serial.println(lastMotorInXL);
     Serial.println(lastMotorInYF);
     Serial.println(lastMotorInXR);
