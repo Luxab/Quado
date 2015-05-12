@@ -329,14 +329,37 @@ void throttle()
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
 
 // I think I deleted the steering if else tree for the throttle method, could be wrong.
+// Added back the if else tree, 99% sure this is what was wrong
+
+
+
+    if (signalInX < 0)
+    {
+      motorInXL = (signalInX * -1) - 5;
+      motorInXR = signalInX * -1;
+    }
+    else if (signalInX > 0)
+    {
+      motorInXL = signalInX;
+      motorInXR = signalInX - 5;
+    }
+
+    if (signalInY < 0)
+    {
+      motorInYB = (signalInY * -1) - 5;
+      motorInYF = (signalInY * -1);
+    }
+    else if (signalInY > 0)
+    {
+      motorInYB = signalInY;
+      motorInYF = signalInY - 5;
+    }
+    
+    
 
     if (signalInZ <= 0)
     {
       signalInZ = 0;
-    }
-    else
-    {
-      //signalInZ = signalInZ;
     }
 
     motorInXL += signalInZ;
@@ -387,7 +410,6 @@ void throttle()
     t.write( lastMotorInYF);
     u.write( lastMotorInXR);
     v.write( lastMotorInYB);
-    
     
   }
 }
