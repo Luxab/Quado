@@ -59,7 +59,7 @@ RF24 radio(9, 10);
 
 void areWeSteering() // Are we steering? defined by the boolean SteerMode
 {
-  if (signalInX == def && signalInY == def && signalInZ == def)
+  if (signalInX == def && signalInY == def)
   {
    steerMode = false;
   }
@@ -92,6 +92,11 @@ void stabilization()
    double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
    double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
    double servo4Pos=map(s4V,0.0,1000.0,pval,180.0); 
+   
+    motorInXL += 0;
+    motorInXR += 0;
+    motorInYF += 0;
+    motorInYB += 0;
 }
 
 void steering()
