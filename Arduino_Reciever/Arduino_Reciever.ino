@@ -258,7 +258,56 @@ void loop() //loops and runs the methods, writes servo values
     
     // DEFAULT SIGNALS :  X -64, Y 64, Z 64
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
+<<<<<<< HEAD
   
+=======
+
+// I think I deleted the steering if else tree for the throttle method, could be wrong.
+// Added back the if else tree, 99% sure this is what was wrong
+
+
+
+    if (signalInX < 0)
+    {
+      motorInXL = (signalInX * -1) - 5;
+      motorInXR = signalInX * -1;
+    }
+    else if (signalInX > 0)
+    {
+      motorInXL = signalInX;
+      motorInXR = signalInX - 5;
+    }
+
+    if (signalInY < 0)
+    {
+      motorInYB = (signalInY * -1) - 5;
+      motorInYF = (signalInY * -1);
+    }
+    else if (signalInY > 0)
+    {
+      motorInYB = signalInY;
+      motorInYF = signalInY - 5;
+    }
+    
+    
+
+    if (signalInZ <= 0)
+    {
+      signalInZ = 0;
+    }
+
+    motorInXL += signalInZ;
+    motorInXR += signalInZ;
+    motorInYF += signalInZ;
+    motorInYB += signalInZ;
+
+
+    lastMotorInXL = motorInXL;
+    lastMotorInXR = motorInXR;
+    lastMotorInYF = motorInYF;
+    lastMotorInYB = motorInYB;
+
+>>>>>>> origin/master
 
     /*
     // begin writing outputs -- test
@@ -306,6 +355,31 @@ void loop() //loops and runs the methods, writes servo values
     Serial.println(lastMotorInYF);
     Serial.println(lastMotorInXR);
     Serial.println(lastMotorInYB);
+<<<<<<< HEAD
+=======
+    
+    s.write( lastMotorInXL);
+    t.write( lastMotorInYF);
+    u.write( lastMotorInXR);
+    v.write( lastMotorInYB);
+    
+  }
+}
+
+
+
+void loop() //loops and runs the methods, writes servo values
+{
+  //running the methods that edit the servo values
+  throttle();
+  if (steerMode)
+  {
+   steering(); 
+  }
+  else
+  {
+   stabilization(); 
+>>>>>>> origin/master
   }
   
   //Capping the value output to 179 to prevent accidental unwanted calibration
