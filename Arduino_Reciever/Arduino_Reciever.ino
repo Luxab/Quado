@@ -135,65 +135,7 @@ void stabilization()
 }
 
 void steering()
-{
-  
-  //String x = "";
-
-  signalInX = 0, signalInY = 0, signalInZ = 0;
-  motorInXL = 0, motorInXR = 0,
-      motorInYF = 0, motorInYB = 0, motorInZ = 0;
-  motorInX = 0, motorInY = 0;
-
-
-  if (radio.available())
-  {
-
-    radio.read(msg, 1);
-
-    char theChar = msg[0];
-    
-    //Serial.println(theChar);
-    
-    if (theChar != ('C'))
-    {
-      x.concat(theChar);
-      theMessage.concat(theChar);
-      delay(2);
-    }
-    else
-    {
-      //Serial.println(theMessage);
-      // INSERT MOTOR CODE HERE?
-      
-    xIndex = theMessage.indexOf("X");
-    yIndex = theMessage.indexOf("Y");
-    zIndex = theMessage.indexOf("Z");
-    /*
-    No More Loop, Unnecessary
-    nextLoop = theMessage.substring(zIndex);
-    nLoopXIndex = nextLoop.indexOf("X");
-    */
-
-    // theMessage should be X###Y###Z###
-    x = theMessage.substring(xIndex + 1, yIndex);
-    y = theMessage.substring(yIndex + 1, zIndex);
-    z = theMessage.substring(zIndex + 1);
-
-    signalInX = x.toInt() - 64;
-    signalInY = y.toInt() - 64;
-    signalInZ = z.toInt() - 64;
-    
-    /*
-    Serial.println(signalInX);
-    Serial.println(signalInY);
-    Serial.println(signalInZ);
-    */
-    
-    // DEFAULT SIGNALS :  X -64, Y 64, Z 64
-    // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
-
-// I'm not sure what this if/else tree does, Michael can explain it
-// also wouldn't this crash if signalInX or signalInY were == 0?
+{   
 
     if (signalInX < 0)
     {
@@ -233,58 +175,47 @@ void steering()
     lastMotorInYF = motorInYF;
     lastMotorInYB = motorInYB;
 
-
-    /*
-    // begin writing outputs -- test
-    radio.stopListening();
-    String sendMessage = x+y+z;
-    radio.openWritingPipe(pipe);
-    for (int i = 0; i < sendMessage.length(); i ++)
-    {
-      int charToSend[1];
-      charToSend[0] = sendMessage.charAt(i);
-      radio.write(charToSend, 15);
-    }
-    msg[0] = 'C';  // sends a terminating string value
-    radio.write(msg, 1);
-    */
-    //radio.powerDown();
-    //delay(1);
-    //radio.powerUp();
-
-    // end writing
-    
-    theMessage = "";
-    
-    }
-  }
-  else // if no connection to the controller, then you have to do something I guess
-  {
-    Serial.println("No Radio.");
-    Serial.println(lastMotorInXL);
-    Serial.println(lastMotorInYF);
-    Serial.println(lastMotorInXR);
-    Serial.println(lastMotorInYB);
-    
-    
-  }
 }
+
 
 void throttle()
 {
-  
-  //String x = "";
 
+
+// I think I deleted the steering if else tree for the throttle method, could be wrong.
+
+    if (signalInZ <= 0)
+    {
+      signalInZ = 0;
+    }
+    else
+    {
+      //signalInZ = signalInZ;
+    }
+
+    motorInXL += signalInZ;
+    motorInXR += signalInZ;
+    motorInYF += signalInZ;
+    motorInYB += signalInZ;
+
+    lastMotorInXL = motorInXL;
+    lastMotorInXR = motorInXR;
+    lastMotorInYF = motorInYF;
+    lastMotorInYB = motorInYB;    
+    
+}
+
+
+
+
+void loop() //loops and runs the methods, writes servo values
+{
   signalInX = 0, signalInY = 0, signalInZ = 0;
   motorInXL = 0, motorInXR = 0,
       motorInYF = 0, motorInYB = 0, motorInZ = 0;
   motorInX = 0, motorInY = 0;
-
-
-  if (radio.available())
-  {
-
-    radio.read(msg, 1);
+  
+  radio.read(msg, 1);
 
     char theChar = msg[0];
     
@@ -327,29 +258,7 @@ void throttle()
     
     // DEFAULT SIGNALS :  X -64, Y 64, Z 64
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
-
-// I think I deleted the steering if else tree for the throttle method, could be wrong.
-
-    if (signalInZ <= 0)
-    {
-      signalInZ = 0;
-    }
-    else
-    {
-      //signalInZ = signalInZ;
-    }
-
-    motorInXL += signalInZ;
-    motorInXR += signalInZ;
-    motorInYF += signalInZ;
-    motorInYB += signalInZ;
-
-
-    lastMotorInXL = motorInXL;
-    lastMotorInXR = motorInXR;
-    lastMotorInYF = motorInYF;
-    lastMotorInYB = motorInYB;
-
+  
 
     /*
     // begin writing outputs -- test
@@ -374,6 +283,21 @@ void throttle()
     theMessage = "";
     
     }
+  
+  
+  
+  //running the methods that edit the servo values
+  if (radio.available())
+  {
+    throttle();
+    if (steerMode)
+    {
+     steering(); 
+    }
+    else
+    {
+     stabilization(); 
+    }
   }
   else // if no connection to the controller, then you have to do something I guess
   {
@@ -382,29 +306,6 @@ void throttle()
     Serial.println(lastMotorInYF);
     Serial.println(lastMotorInXR);
     Serial.println(lastMotorInYB);
-    
-    s.write( lastMotorInXL);
-    t.write( lastMotorInYF);
-    u.write( lastMotorInXR);
-    v.write( lastMotorInYB);
-    
-    
-  }
-}
-
-
-
-void loop() //loops and runs the methods, writes servo values
-{
-  //running the methods that edit the servo values
-  throttle();
-  if (steerMode)
-  {
-   steering(); 
-  }
-  else
-  {
-   stabilization(); 
   }
   
   //Capping the value output to 179 to prevent accidental unwanted calibration
