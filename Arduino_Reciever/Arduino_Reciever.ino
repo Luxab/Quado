@@ -57,6 +57,41 @@ bool steerMode = false; // Are we steering, or should we be using the stablizati
 // EDIT WHICH PINS THE RADIO WILL BE ON
 RF24 radio(9, 10);
 
+void setup() {
+
+  radio.begin();
+
+  Serial.begin(115200); // open the serial port at 9600 bps
+  //establishContact();
+  // send a byte to establish contact until receiver responds
+  //
+  
+   radio.openWritingPipe(pipe);
+  radio.openReadingPipe(1, pipe);
+  
+  //radio.openWritingPipe(addresses[1]);
+  //radio.openReadingPipe(1, addresses[0]);
+  //radio.openReadingPipe(1, addresses[0]);
+  radio.startListening();
+
+  /*
+  pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
+  pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
+  pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
+  pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
+ 
+  s.write(0); // set Servo S to speed 0
+  t.write(0); // set Servo T to speed 0
+  u.write(0); // set Servo U to speed 0
+  v.write(0); // set Servo V to speed 0
+  */
+
+  s.attach(2); // attaches Servo S to PIN 2
+  t.attach(3); // attaches Servo T to PIN 3
+  u.attach(4); // attaches Servo U to PIN 4
+  v.attach(5); // attaches Servo V to PIN 5
+}
+
 void areWeSteering() // Are we steering? defined by the boolean SteerMode
 {
 //  if (signalInX == def && signalInY == def)
@@ -357,40 +392,7 @@ void throttle()
   }
 }
 
-void setup() {
 
-  radio.begin();
-
-  Serial.begin(115200); // open the serial port at 9600 bps
-  //establishContact();
-  // send a byte to establish contact until receiver responds
-  //
-  
-   radio.openWritingPipe(pipe);
-  radio.openReadingPipe(1, pipe);
-  
-  //radio.openWritingPipe(addresses[1]);
-  //radio.openReadingPipe(1, addresses[0]);
-  //radio.openReadingPipe(1, addresses[0]);
-  radio.startListening();
-
-  /*
-  pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
-  pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
-  pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
-  pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
- 
-  s.write(0); // set Servo S to speed 0
-  t.write(0); // set Servo T to speed 0
-  u.write(0); // set Servo U to speed 0
-  v.write(0); // set Servo V to speed 0
-  */
-
-  s.attach(2); // attaches Servo S to PIN 2
-  t.attach(3); // attaches Servo T to PIN 3
-  u.attach(4); // attaches Servo U to PIN 4
-  v.attach(5); // attaches Servo V to PIN 5
-}
 
 void loop() //loops and runs the methods, writes servo values
 {
