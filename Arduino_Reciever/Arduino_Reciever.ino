@@ -170,10 +170,7 @@ void steering()
    
    //deleted the throttle portion to fit the steering method
 
-    lastMotorInXL = motorInXL;
-    lastMotorInXR = motorInXR;
-    lastMotorInYF = motorInYF;
-    lastMotorInYB = motorInYB;
+    
 
 }
 
@@ -189,12 +186,6 @@ void throttle()
     motorInXR += signalInZ;
     motorInYF += signalInZ;
     motorInYB += signalInZ;
-
-    lastMotorInXL = motorInXL;
-    lastMotorInXR = motorInXR;
-    lastMotorInYF = motorInYF;
-    lastMotorInYB = motorInYB;    
-    
 }
 
 void loop() //loops and runs the methods, writes servo values
@@ -206,7 +197,6 @@ void loop() //loops and runs the methods, writes servo values
   
   if (radio.available())
   {
-
     radio.read(msg, 1);
 
     char theChar = msg[0];
@@ -236,8 +226,8 @@ void loop() //loops and runs the methods, writes servo values
     signalInY = y.toInt() - 64;
     signalInZ = z.toInt() - 64;
     
-    theMessage = "";
-    }
+    
+    
   
   //running the methods that edit the servo values
   throttle();
@@ -266,11 +256,20 @@ void loop() //loops and runs the methods, writes servo values
     u.write(motorInXR);
     v.write(motorInYB);
     
+    //temporarily storing the values
+    lastMotorInXL = motorInXL;
+    lastMotorInXR = motorInXR;
+    lastMotorInYF = motorInYF;
+    lastMotorInYB = motorInYB;
+    
     //Readout of what's being sent do the Servos
     Serial.print("MotorInXL: "); Serial.println(motorInXL);
     Serial.print("MotorInYF: "); Serial.println(motorInYF);
     Serial.print("MotorInXR: "); Serial.println(motorInXR);
     Serial.print("MotorInYB: "); Serial.println(motorInYB);
+    
+    theMessage = "";
+    }
     
   }
   else //if no radio
