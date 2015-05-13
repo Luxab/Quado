@@ -9,9 +9,9 @@
   -Scripps Ranch High School Robotics Team-
   Quadcopter Wireless Receiving
   By Michael Yee && Duncan Klug
-  Last Update : 5/11/2015
+  Last Update : 5/13/2015
   Recieves data from Controller_ArduinoRegister
-  Version XX
+  Version Github
   ( ͡° ͜ʖ ͡°)
 */
 
@@ -215,7 +215,7 @@ void loop() //loops and runs the methods, writes servo values
     
     if (theChar != ('C'))
     {
-      x.concat(theChar);
+      //x.concat(theChar);  huh? why is this here....
       theMessage.concat(theChar);
       delay(2);
     }
