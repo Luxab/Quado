@@ -52,7 +52,7 @@ String theMessage = "";
   
   int def = 0;
 
-bool steerMode = false; // Are we steering, or should we be using the stablization code?
+bool steerMode = true; // Are we steering, or should we be using the stablization code?
 
 // EDIT WHICH PINS THE RADIO WILL BE ON
 RF24 radio(9, 10);
@@ -180,10 +180,6 @@ void steering()
 
 void throttle()
 {
-
-
-// I think I deleted the steering if else tree for the throttle method, could be wrong.
-
     if (signalInZ <= 0)
     {
       signalInZ = 0;
@@ -258,9 +254,7 @@ void loop() //loops and runs the methods, writes servo values
     
     // DEFAULT SIGNALS :  X -64, Y 64, Z 64
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
-<<<<<<< HEAD
-  
-=======
+
 
 // I think I deleted the steering if else tree for the throttle method, could be wrong.
 // Added back the if else tree, 99% sure this is what was wrong
@@ -307,7 +301,6 @@ void loop() //loops and runs the methods, writes servo values
     lastMotorInYF = motorInYF;
     lastMotorInYB = motorInYB;
 
->>>>>>> origin/master
 
     /*
     // begin writing outputs -- test
@@ -355,8 +348,6 @@ void loop() //loops and runs the methods, writes servo values
     Serial.println(lastMotorInYF);
     Serial.println(lastMotorInXR);
     Serial.println(lastMotorInYB);
-<<<<<<< HEAD
-=======
     
     s.write( lastMotorInXL);
     t.write( lastMotorInYF);
@@ -379,7 +370,6 @@ void loop() //loops and runs the methods, writes servo values
   else
   {
    stabilization(); 
->>>>>>> origin/master
   }
   
   //Capping the value output to 179 to prevent accidental unwanted calibration

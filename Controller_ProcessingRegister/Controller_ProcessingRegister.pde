@@ -39,7 +39,7 @@ ControlSlider slider;
 public void setup() {
   size(400, 400);
   String portName = Serial.list()[0];              //list serial ports, save the first one as portName
-  myPort = new Serial(this, "COM4", 115200); 
+  myPort = new Serial(this, portName, 115200); 
   control = ControlIO.getInstance(this);
   device = control.getDevice("Controller (XUSB Gamepad)");
   //device = control.getDevice("Mouse");
