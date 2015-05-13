@@ -230,8 +230,9 @@ void loop() //loops and runs the methods, writes servo values
     
   
   //running the methods that edit the servo values
-  throttle();
   steering();
+  throttle();
+
 //  if (steerMode)
 //  {
 //   steering(); 
