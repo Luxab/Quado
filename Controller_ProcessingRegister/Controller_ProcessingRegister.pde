@@ -11,10 +11,8 @@ import g4p_controls.*;
   By Michael Yee
   4/17/2015
 
-  Testing only Quadcopter flying Up!~
   Goes hand-in-hand with 
-  Quadcopter_Controller_Register_ArdV02
-  Version 02
+  Controller_ArduinoRegister
 */
 
 float flyUp, flyX, flyY, rawY; // rawY is old for the Z-Axis
