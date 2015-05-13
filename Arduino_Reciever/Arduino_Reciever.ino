@@ -2,7 +2,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_LSM303_U.h>
 #include <Servo.h>
-#include <SPI.h>
+#include <SPI.h> 
 #include "RF24.h"
 
 /*
@@ -21,11 +21,10 @@ Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
 Servo s, t, u, v;
 bool on = true;
 int val = 0; // Data received from the serial port
-int lastMotorInZ = 0, lastMotorInXL = 0, lastMotorInXR = 0,
+int lastMotorInXL = 0, lastMotorInXR = 0,
     lastMotorInYB = 0, lastMotorInYF = 0;
-int lenIn = 0;
 String x = "", y = "", z = "";
-int xIndex = 0, yIndex = 0, zIndex = 0, nLoopXIndex;
+int xIndex = 0, yIndex = 0, zIndex = 0;
 String nextLoop = "";
 int decDir = 180; // for x - y changing position
 bool motorIn = true;
@@ -62,11 +61,8 @@ void setup() {
   radio.begin();
 
   Serial.begin(115200); // open the serial port at 9600 bps
-  //establishContact();
-  // send a byte to establish contact until receiver responds
-  //
   
-   radio.openWritingPipe(pipe);
+  radio.openWritingPipe(pipe);
   radio.openReadingPipe(1, pipe);
   
   //radio.openWritingPipe(addresses[1]);
@@ -75,10 +71,10 @@ void setup() {
   radio.startListening();
 
   /*
-  pinMode(9, OUTPUT); // sets Pin 9 to Output [?]
-  pinMode(10, OUTPUT); // sets Pin 10 to Output [?]
-  pinMode(11, OUTPUT); // sets Pin 11 to Output [?]
-  pinMode(12, OUTPUT); // sets Pin 12 to Output [?]
+  pinMode(2, OUTPUT); // sets Pin 2 to Output [?]
+  pinMode(3, OUTPUT); // sets Pin 3 to Output [?]
+  pinMode(4, OUTPUT); // sets Pin 4 to Output [?]
+  pinMode(5, OUTPUT); // sets Pin 5 to Output [?]
  
   s.write(0); // set Servo S to speed 0
   t.write(0); // set Servo T to speed 0
@@ -136,7 +132,11 @@ void stabilization()
 
 void steering()
 {   
-
+    // if Left Controller Stick is moved Left - signalInX < 0 
+    // if Left Controller Stick is moved Right - signalInX > 0 
+    // if Left Controller Stick is moved Up - signalInY > 0
+    // if Left Controller Stick is moved Down - signalInY < 0 
+    
     if (signalInX < 0)
     {
       motorInXL = (signalInX * -1) - 5;
@@ -159,13 +159,13 @@ void steering()
       motorInYF = signalInY - 10;
     }
 
+    // if Right Controller Stick is moved Down - signalInZ = 0
+    // This is to prevent a negative number which would decrease the speeds of all motors
+    // May change it to allow this in the future (but just to a gradual decrease in altitude)
+
     if (signalInZ <= 0)
     {
       signalInZ = 0;
-    }
-    else
-    {
-      //signalInZ = signalInZ;
     }
    
    //deleted the throttle portion to fit the steering method
@@ -183,10 +183,6 @@ void throttle()
     if (signalInZ <= 0)
     {
       signalInZ = 0;
-    }
-    else
-    {
-      //signalInZ = signalInZ;
     }
 
     motorInXL += signalInZ;
@@ -215,7 +211,7 @@ void loop() //loops and runs the methods, writes servo values
 
     char theChar = msg[0];
     
-    //Serial.println(theChar);
+    //Serial.println(theChar); -- debug purposes
     
     if (theChar != ('C'))
     {
@@ -225,17 +221,11 @@ void loop() //loops and runs the methods, writes servo values
     }
     else
     {
-      //Serial.println(theMessage);
-      // INSERT MOTOR CODE HERE?
-      
+    //Serial.println(theMessage); -- debug purposes
+
     xIndex = theMessage.indexOf("X");
     yIndex = theMessage.indexOf("Y");
     zIndex = theMessage.indexOf("Z");
-    /*
-    No More Loop, Unnecessary
-    nextLoop = theMessage.substring(zIndex);
-    nLoopXIndex = nextLoop.indexOf("X");
-    */
 
     // theMessage should be X###Y###Z###
     x = theMessage.substring(xIndex + 1, yIndex);
