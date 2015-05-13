@@ -201,9 +201,6 @@ void throttle()
     
 }
 
-
-
-
 void loop() //loops and runs the methods, writes servo values
 {
   signalInX = 0, signalInY = 0, signalInZ = 0;
@@ -211,7 +208,10 @@ void loop() //loops and runs the methods, writes servo values
       motorInYF = 0, motorInYB = 0, motorInZ = 0;
   motorInX = 0, motorInY = 0;
   
-  radio.read(msg, 1);
+  if (radio.available())
+  {
+
+    radio.read(msg, 1);
 
     char theChar = msg[0];
     
@@ -246,61 +246,9 @@ void loop() //loops and runs the methods, writes servo values
     signalInY = y.toInt() - 64;
     signalInZ = z.toInt() - 64;
     
-    /*
-    Serial.println(signalInX);
-    Serial.println(signalInY);
-    Serial.println(signalInZ);
-    */
-    
-    // DEFAULT SIGNALS :  X -64, Y 64, Z 64
-    // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
-    
-
-    if (signalInZ <= 0)
-    {
-      signalInZ = 0;
-    }
-
-    
     theMessage = "";
-    
     }
   
-  
-  
-  //running the methods that edit the servo values
-  if (radio.available())
-  {
-    throttle();
-    if (steerMode)
-    {
-     steering(); 
-    }
-    else
-    {
-     stabilization(); 
-    }
-  }
-  else // if no connection to the controller, then you have to do something I guess
-  {
-    Serial.println("No Radio.");
-    Serial.println(lastMotorInXL);
-    Serial.println(lastMotorInYF);
-    Serial.println(lastMotorInXR);
-    Serial.println(lastMotorInYB);
-    
-    s.write( lastMotorInXL);
-    t.write( lastMotorInYF);
-    u.write( lastMotorInXR);
-    v.write( lastMotorInYB);
-    
-  }
-}
-
-
-
-void loop() //loops and runs the methods, writes servo values
-{
   //running the methods that edit the servo values
   throttle();
   if (steerMode)
@@ -328,8 +276,8 @@ void loop() //loops and runs the methods, writes servo values
     u.write(motorInXR);
     v.write(motorInYB);
     
-    if (radio.available())
-    {
+
+    
     //Readout of what's being sent do the Servos
     Serial.print("MotorInXL: ");
     Serial.println(motorInXL);
@@ -339,5 +287,21 @@ void loop() //loops and runs the methods, writes servo values
     Serial.println(motorInXR);
     Serial.print("MotorInYB: ");
     Serial.println(motorInYB);
-    }
+    
+  }
+  else //if no radio
+  {
+    Serial.println("No Radio.");
+    Serial.println(lastMotorInXL);
+    Serial.println(lastMotorInYF);
+    Serial.println(lastMotorInXR);
+    Serial.println(lastMotorInYB);
+    
+    s.write( lastMotorInXL);
+    t.write( lastMotorInYF);
+    u.write( lastMotorInXR);
+    v.write( lastMotorInYB);
+    
+    
+  }
 }
