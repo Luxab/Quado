@@ -231,14 +231,15 @@ void loop() //loops and runs the methods, writes servo values
   
   //running the methods that edit the servo values
   throttle();
-  if (steerMode)
-  {
-   steering(); 
-  }
-  else
-  {
-   stabilization(); 
-  }
+  steering();
+//  if (steerMode)
+//  {
+//   steering(); 
+//  }
+//  else
+//  {
+//   stabilization(); 
+//  }
   
   //Capping the value output to 179 to prevent accidental unwanted calibration
     if (motorInXL >= 180)
@@ -272,18 +273,18 @@ void loop() //loops and runs the methods, writes servo values
     }
     
   }
-  else //if no radio
-  {
-    Serial.println("No Radio.");
-    Serial.println(lastMotorInXL);
-    Serial.println(lastMotorInYF);
-    Serial.println(lastMotorInXR);
-    Serial.println(lastMotorInYB);
-    
-    s.write(lastMotorInXL);
-    t.write(lastMotorInYF);
-    u.write(lastMotorInXR);
-    v.write(lastMotorInYB);
-    
-  }
+//  else //if no radio
+//  {
+//    Serial.println("No Radio.");
+//    Serial.println(lastMotorInXL);
+//    Serial.println(lastMotorInYF);
+//    Serial.println(lastMotorInXR);
+//    Serial.println(lastMotorInYB);
+//    
+//    s.write(lastMotorInXL);
+//    t.write(lastMotorInYF);
+//    u.write(lastMotorInXR);
+//    v.write(lastMotorInYB);
+//    
+//  }
 }
