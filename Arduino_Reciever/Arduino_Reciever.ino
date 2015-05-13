@@ -254,35 +254,6 @@ void loop() //loops and runs the methods, writes servo values
     
     // DEFAULT SIGNALS :  X -64, Y 64, Z 64
     // DEFAULT MOTOR : XL-YF-XR-YB 59, 54, 64, 64
-
-
-// I think I deleted the steering if else tree for the throttle method, could be wrong.
-// Added back the if else tree, 99% sure this is what was wrong
-
-
-
-    if (signalInX < 0)
-    {
-      motorInXL = (signalInX * -1) - 5;
-      motorInXR = signalInX * -1;
-    }
-    else if (signalInX > 0)
-    {
-      motorInXL = signalInX;
-      motorInXR = signalInX - 5;
-    }
-
-    if (signalInY < 0)
-    {
-      motorInYB = (signalInY * -1) - 5;
-      motorInYF = (signalInY * -1);
-    }
-    else if (signalInY > 0)
-    {
-      motorInYB = signalInY;
-      motorInYF = signalInY - 5;
-    }
-    
     
 
     if (signalInZ <= 0)
@@ -290,37 +261,6 @@ void loop() //loops and runs the methods, writes servo values
       signalInZ = 0;
     }
 
-    motorInXL += signalInZ;
-    motorInXR += signalInZ;
-    motorInYF += signalInZ;
-    motorInYB += signalInZ;
-
-
-    lastMotorInXL = motorInXL;
-    lastMotorInXR = motorInXR;
-    lastMotorInYF = motorInYF;
-    lastMotorInYB = motorInYB;
-
-
-    /*
-    // begin writing outputs -- test
-    radio.stopListening();
-    String sendMessage = x+y+z;
-    radio.openWritingPipe(pipe);
-    for (int i = 0; i < sendMessage.length(); i ++)
-    {
-      int charToSend[1];
-      charToSend[0] = sendMessage.charAt(i);
-      radio.write(charToSend, 15);
-    }
-    msg[0] = 'C';  // sends a terminating string value
-    radio.write(msg, 1);
-    */
-    //radio.powerDown();
-    //delay(1);
-    //radio.powerUp();
-
-    // end writing
     
     theMessage = "";
     
