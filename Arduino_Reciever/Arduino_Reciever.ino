@@ -156,7 +156,7 @@ void steering()
     else if (signalInY > 0)
     {
       motorInYB = signalInY;
-      motorInYF = signalInY - 10;
+      motorInYF = signalInY - 5;
     }
 
     // if Right Controller Stick is moved Down - signalInZ = 0
@@ -266,17 +266,11 @@ void loop() //loops and runs the methods, writes servo values
     u.write(motorInXR);
     v.write(motorInYB);
     
-
-    
     //Readout of what's being sent do the Servos
-    Serial.print("MotorInXL: ");
-    Serial.println(motorInXL);
-    Serial.print("MotorInYF: ");
-    Serial.println(motorInYF);
-    Serial.print("MotorInXR: ");
-    Serial.println(motorInXR);
-    Serial.print("MotorInYB: ");
-    Serial.println(motorInYB);
+    Serial.print("MotorInXL: "); Serial.println(motorInXL);
+    Serial.print("MotorInYF: "); Serial.println(motorInYF);
+    Serial.print("MotorInXR: "); Serial.println(motorInXR);
+    Serial.print("MotorInYB: "); Serial.println(motorInYB);
     
   }
   else //if no radio
@@ -287,11 +281,10 @@ void loop() //loops and runs the methods, writes servo values
     Serial.println(lastMotorInXR);
     Serial.println(lastMotorInYB);
     
-    s.write( lastMotorInXL);
-    t.write( lastMotorInYF);
-    u.write( lastMotorInXR);
-    v.write( lastMotorInYB);
-    
+    s.write(lastMotorInXL);
+    t.write(lastMotorInYF);
+    u.write(lastMotorInXR);
+    v.write(lastMotorInYB);
     
   }
 }
