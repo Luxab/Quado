@@ -243,6 +243,16 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 179;
       if (motorInYF >= 180)
         motorInYF = 179;
+        
+      //Experimental spike protection
+      if (fabs(motorInXL-lastMotorInXL)>40)
+        motorInXL = lastMotorInXL;
+      if (fabs(motorInXR-lastMotorInXR)>40)
+        motorInXR = lastMotorInXR;
+      if (fabs(motorInYF-lastMotorInYF)>40)
+        motorInYF = lastMotorInYF;
+      if (fabs(motorInYB-lastMotorInYB)>40)
+        motorInYB = lastMotorInYB;
 
       //Writing them servo values to the servos
       s.write(motorInXL);
