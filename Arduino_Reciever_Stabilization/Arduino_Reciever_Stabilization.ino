@@ -119,15 +119,15 @@ void stabilization()
      double s2V = 100*abs(event.acceleration.y);
      double s4V = 100*abs(event.acceleration.y);
   
-     double servo1Pos=map(s1V,0.0,1000.0,pval,180.0);
-     double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
-     double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
-     double servo4Pos=map(s4V,0.0,1000.0,pval,180.0);
+     double servo1Pos=map(s1V,0.0,1000.0,pval,60.0);
+     double servo2Pos=map(s2V,0.0,1000.0,pval,60.0);
+     double servo3Pos=map(s3V,0.0,1000.0,pval,60.0);
+     double servo4Pos=map(s4V,0.0,1000.0,pval,60.0);
   
-     motorInXL += 0;
-     motorInXR += 0;
-     motorInYF += 0;
-     motorInYB += 0;
+     motorInXL += servo1Pos;
+     motorInXR += servo2Pos;
+     motorInYF += servo3Pos;
+     motorInYB += servo4Pos;
 }
 
 void steering()
