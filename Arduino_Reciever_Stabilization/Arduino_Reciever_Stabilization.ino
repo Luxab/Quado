@@ -9,7 +9,7 @@
   -Scripps Ranch High School Robotics Team-
   Quadcopter Wireless Receiving
   By Michael Yee && Duncan Klug
-  Last Update : 5/13/2015
+  Last Update : 5/16/2015
   Recieves data from Controller_ArduinoRegister
   Version Github
   ( ͡° ͜ʖ ͡°)
@@ -90,44 +90,44 @@ void setup() {
 
 void areWeSteering() // Are we steering? defined by the boolean SteerMode
 {
-  //  if (signalInX == def && signalInY == def)
-  //  {
-  //   steerMode = false;
-  //  }
-  //  else
-  //  {
-  //   steerMode = true;
-  //  }
+    if (signalInX == def && signalInY == def)
+    {
+     steerMode = false;
+    }
+    else
+    {
+     steerMode = true;
+    }
 }
 
 void stabilization()
 {
-  //   /* Get a new sensor event */
-  //  sensors_event_t event;
-  //  accel.getEvent(&event);
-  //
-  //  /* Display the results (acceleration is measured in m/s^2) */
-  // /* Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
-  //  Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
-  //  Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
-  // */
-  //
-  //  int position;  //declares an integer with no value
-  //   int pval = 0; //pval -> previous value. For use with implementing into other code?
-  //   double s1V = 100*abs(event.acceleration.x);
-  //   double s3V = 100*abs(event.acceleration.x);
-  //   double s2V = 100*abs(event.acceleration.y);
-  //   double s4V = 100*abs(event.acceleration.y);
-  //
-  //   double servo1Pos=map(s1V,0.0,1000.0,pval,180.0);
-  //   double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
-  //   double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
-  //   double servo4Pos=map(s4V,0.0,1000.0,pval,180.0);
-  //
-  //    motorInXL += 0;
-  //    motorInXR += 0;
-  //    motorInYF += 0;
-  //    motorInYB += 0;
+     /* Get a new sensor event */
+    sensors_event_t event;
+    accel.getEvent(&event);
+  
+    /* Display the results (acceleration is measured in m/s^2) */
+   /* Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
+    Serial.print("Y: "); Serial.print(event.acceleration.y); Serial.print("  ");
+    Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
+   */
+  
+    int position;  //declares an integer with no value
+     int pval = 0; //pval -> previous value. For use with implementing into other code?
+     double s1V = 100*abs(event.acceleration.x);
+     double s3V = 100*abs(event.acceleration.x);
+     double s2V = 100*abs(event.acceleration.y);
+     double s4V = 100*abs(event.acceleration.y);
+  
+     double servo1Pos=map(s1V,0.0,1000.0,pval,180.0);
+     double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
+     double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
+     double servo4Pos=map(s4V,0.0,1000.0,pval,180.0);
+  
+     motorInXL += 0;
+     motorInXR += 0;
+     motorInYF += 0;
+     motorInYB += 0;
 }
 
 void steering()
@@ -232,17 +232,8 @@ void loop() //loops and runs the methods, writes servo values
       //running the methods that edit the servo values
       steering();
       throttle();
+      stabilization();
 
-      //  if (steerMode)
-      //  {
-      //   steering();
-      //  }
-      //  else
-      //  {
-      //   stabilization();
-      //  }
-
-/*
       //Capping the value output to 179 to prevent accidental unwanted calibration
       if (motorInXL >= 180)
         motorInXL = 179;
@@ -252,17 +243,6 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 179;
       if (motorInYF >= 180)
         motorInYF = 179;
-*/
-        
-      //Capping the value output to 50 to prevent accidental unwanted throttle during demo
-      if (motorInXL >= 51)
-        motorInXL = 50;
-      if (motorInXR >= 51)
-        motorInXR = 50;
-      if (motorInYB >= 51)
-        motorInYB = 50;
-      if (motorInYF >= 51)
-        motorInYF = 50;
 
       //Writing them servo values to the servos
       s.write(motorInXL);
