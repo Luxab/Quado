@@ -189,6 +189,7 @@ void throttle()
     signalInZ = 0;
   }
   
+  /*
   // If Z-Stick is Almost All the Way Down
   if (signalInZ <= -160)
   {
@@ -196,13 +197,14 @@ void throttle()
     // This should make the motors 0
     signalInZ = -100; 
   }
+  */
 
   motorInXL += signalInZ;
   motorInXR += signalInZ;
   motorInYF += signalInZ;
   motorInYB += signalInZ;
   
-  
+  /*
   // If motor input is less than 0, make it 0
   if (motorInXL < 0)
     motorInXL = 0;
@@ -212,6 +214,7 @@ void throttle()
     motorInYF = 0;
   if(motorInYB < 0)
     motorInYB = 0;
+    */
   
 }
 
@@ -269,7 +272,7 @@ void loop() //loops and runs the methods, writes servo values
       //   stabilization();
       //  }
 
-
+/*
       //Capping the value output to 179 to prevent accidental unwanted calibration
       if (motorInXL >= 180)
         motorInXL = 179;
@@ -279,7 +282,7 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 179;
       if (motorInYF >= 180)
         motorInYF = 179;
-
+*/
         
       //Capping the value output to 50 to prevent accidental unwanted throttle during demo
       if (motorInXL >= 51)
@@ -291,6 +294,7 @@ void loop() //loops and runs the methods, writes servo values
       if (motorInYF >= 51)
         motorInYF = 50;
         
+        /*
         // Capping the value output to 1 for testing
         if (motorInXL >= 1)
         motorInXL = 1;
@@ -300,6 +304,7 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 1;
       if (motorInYF >= 1)
         motorInYF = 1;
+        */
         
         //Experimental spike protection
       if (fabs(motorInXL-lastMotorInXL)>40)
@@ -336,7 +341,7 @@ void loop() //loops and runs the methods, writes servo values
   else //if no radio
   {
     // debug purposes
-    count ++;
+    //count ++;
     
         Serial.println("No Radio.");
     //    Serial.println(lastMotorInXL);
@@ -349,7 +354,7 @@ void loop() //loops and runs the methods, writes servo values
     u.write(lastMotorInXR);
     v.write(lastMotorInYB);
     
-    Serial.println(count);
+    //Serial.println(count);
 
   }
 }
