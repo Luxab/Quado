@@ -94,7 +94,7 @@ void loop()
     hold = hold.substring(0, indexOfC);
     //hold = Serial.readString();
     String theMessage = hold;
-    Serial.println(theMessage);
+    //Serial.println(theMessage);
 
 
 
@@ -103,14 +103,13 @@ void loop()
     {
       char charToSend[1];
       charToSend[0] = theMessage.charAt(i);
-      Serial.println(charToSend[0]);
+      //Serial.println(charToSend[0]);
       radio.write(charToSend, 15);
     }
 
     msg[0] = 'C';  // sends a terminating string value
     radio.write(msg, 1);
   }
-  //delay(10);
 
   // begin reading -- test
   /*
@@ -137,8 +136,6 @@ void loop()
     Serial.println("RECEIEVED: ");
     Serial.print("" + message);
   */
-
-delay(50); // delay 50ms cause elliot said so....will lower it probably
 
 }
 
