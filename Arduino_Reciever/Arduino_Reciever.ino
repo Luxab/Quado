@@ -33,6 +33,7 @@ byte addresses[][6] = {"1Node", "2Node"};
 const uint64_t pipe = uint64_t(addresses);
 int msg[15];
 String theMessage = "";
+int count = 0;
 
 //some more instance fields
 double s1V;
@@ -123,6 +124,15 @@ void stabilization()
   //   double servo2Pos=map(s2V,0.0,1000.0,pval,180.0);
   //   double servo3Pos=map(s3V,0.0,1000.0,pval,180.0);
   //   double servo4Pos=map(s4V,0.0,1000.0,pval,180.0);
+  
+  /* Print servo1Pos -> servo4Pos for Debug Purposes */
+     /*
+     Serial.println(servo1Pos);
+     Serial.println(servo2Pos);
+     Serial.println(servo3Pos);
+     Serial.println(servo4Pos);
+     */
+     
   //
   //    motorInXL += 0;
   //    motorInXR += 0;
@@ -263,6 +273,26 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 50;
       if (motorInYF >= 51)
         motorInYF = 50;
+        
+        // Capping the value output to 1 for testing
+        if (motorInXL >= 1)
+        motorInXL = 1;
+      if (motorInXR >= 1)
+        motorInXR = 1;
+      if (motorInYB >= 1)
+        motorInYB = 1;
+      if (motorInYF >= 1)
+        motorInYF = 1;
+        
+        //Experimental spike protection
+      if (fabs(motorInXL-lastMotorInXL)>40)
+        motorInXL = lastMotorInXL;
+      if (fabs(motorInXR-lastMotorInXR)>40)
+        motorInXR = lastMotorInXR;
+      if (fabs(motorInYF-lastMotorInYF)>40)
+        motorInYF = lastMotorInYF;
+      if (fabs(motorInYB-lastMotorInYB)>40)
+        motorInYB = lastMotorInYB;
 
       //Writing them servo values to the servos
       s.write(motorInXL);
@@ -288,7 +318,10 @@ void loop() //loops and runs the methods, writes servo values
   }
   else //if no radio
   {
-    //    Serial.println("No Radio.");
+    // debug purposes
+    count ++;
+    
+        Serial.println("No Radio.");
     //    Serial.println(lastMotorInXL);
     //    Serial.println(lastMotorInYF);
     //    Serial.println(lastMotorInXR);
@@ -298,6 +331,8 @@ void loop() //loops and runs the methods, writes servo values
     t.write(lastMotorInYF);
     u.write(lastMotorInXR);
     v.write(lastMotorInYB);
+    
+    Serial.println(count);
 
   }
 }
