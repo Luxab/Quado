@@ -85,7 +85,7 @@ void loop()
     //Serial.println("HOLD: ");
     //Serial.println(hold);
     
-    Serial.setTimeout(25);
+    Serial.setTimeout(50);
     //hold = "X123Y123Z123";
     hold = Serial.readString(); // read it and store it in val
     //Serial.println("HOLD" + hold);
@@ -137,9 +137,6 @@ void loop()
     Serial.println("RECEIEVED: ");
     Serial.print("" + message);
   */
-
-delay(50); // delay 50ms cause elliot said so....will lower it probably
-
 }
 
 
