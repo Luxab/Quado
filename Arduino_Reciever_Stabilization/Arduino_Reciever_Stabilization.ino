@@ -124,6 +124,14 @@ void stabilization()
      double servo3Pos=map(s3V,0.0,1000.0,pval,60.0);
      double servo4Pos=map(s4V,0.0,1000.0,pval,60.0);
   
+     /* Print servo1Pos -> servo4Pos for Debug Purposes */
+     /*
+     Serial.println(servo1Pos);
+     Serial.println(servo2Pos);
+     Serial.println(servo3Pos);
+     Serial.println(servo4Pos);
+     */
+  
      motorInXL += servo1Pos;
      motorInXR += servo2Pos;
      motorInYF += servo3Pos;
