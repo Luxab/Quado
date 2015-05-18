@@ -179,9 +179,6 @@ void steering()
   }
 
   //deleted the throttle portion to fit the steering method
-
-
-
 }
 
 
@@ -191,11 +188,31 @@ void throttle()
   {
     signalInZ = 0;
   }
+  
+  // If Z-Stick is Almost All the Way Down
+  if (signalInZ <= -160)
+  {
+    // Make Signal -100 to ALL Motors
+    // This should make the motors 0
+    signalInZ = -100; 
+  }
 
   motorInXL += signalInZ;
   motorInXR += signalInZ;
   motorInYF += signalInZ;
   motorInYB += signalInZ;
+  
+  
+  // If motor input is less than 0, make it 0
+  if (motorInXL < 0)
+    motorInXL = 0;
+  if (motorInXR < 0)
+    motorInXR = 0;
+  if (motorInYF < 0)
+    motorInYF = 0;
+  if(motorInYB < 0)
+    motorInYB = 0;
+  
 }
 
 void loop() //loops and runs the methods, writes servo values
@@ -252,7 +269,7 @@ void loop() //loops and runs the methods, writes servo values
       //   stabilization();
       //  }
 
-/*
+
       //Capping the value output to 179 to prevent accidental unwanted calibration
       if (motorInXL >= 180)
         motorInXL = 179;
@@ -262,7 +279,7 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 179;
       if (motorInYF >= 180)
         motorInYF = 179;
-*/
+
         
       //Capping the value output to 50 to prevent accidental unwanted throttle during demo
       if (motorInXL >= 51)
