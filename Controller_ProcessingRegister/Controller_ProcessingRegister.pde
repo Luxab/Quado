@@ -16,7 +16,6 @@ import g4p_controls.*;
 */
 
 float flyUp, flyX, flyY, rawY; // rawY is old for the Z-Axis
-float sumPX = 200;
 byte sendY, sendZ, sendX;
 int val, flyUpZ, flyUpX, flyUpY;
 Serial myPort;
@@ -83,7 +82,7 @@ public void getUserInput() {
   {
     flyUp = 180;
   }
-  sendZ = (byte)flyUp;
+  //sendZ = (byte)flyUp;
 
 
   if (flyX < -198 && flyX > -208)
@@ -97,7 +96,7 @@ public void getUserInput() {
   {
     flyX = 180;
   }
-  sendX = (byte)flyX;
+  //sendX = (byte)flyX;
   
   if (flyY < -198 && flyY > -208)
   {
@@ -109,7 +108,7 @@ public void getUserInput() {
   {
     flyY = 180;
   }
-  sendY = (byte)flyY;
+  //sendY = (byte)flyY;
   
   flyUpZ = (int)flyUp;
   flyUpX = (int)flyX;
@@ -140,12 +139,14 @@ public void serialEvent( Serial myPort) {
       //println("SENDING - sendX: " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
       //myPort.write(); // hopefully sends "A" or "B" but may send jibberish or numbers
       myPort.write("X"+flyUpX+"Y"+flyUpY+"Z"+flyUpZ); // sends X,Y,Z to Serial
-      println("SENT - sendX:    " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
-      
+      //println("SENT - sendX:    " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
+      println("SENT - sendX: " +flyUpX+ " sendY: " +flyUpY+ " sendZ: " +flyUpZ);
+      /*
       if (keyPressed == true)
       {
         System.exit(-1);
       }
+      */
       // when you've parsed the data you have, ask for more:
       //myPort.write("A");
     }
@@ -171,7 +172,7 @@ public void draw() {
   if (keyPressed)
   {
     println("PROGRAM EMERGENCY CLOSE...");
-    System.exit(-1);
+    //System.exit(-1);
   }
 }
 
