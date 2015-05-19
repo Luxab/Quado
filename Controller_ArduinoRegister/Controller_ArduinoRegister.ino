@@ -37,7 +37,7 @@ void setup() {
   radio.begin();
 
   //initialize serial communications at a 9600 baud rate
-  Serial.begin(115200); // open the serial port at 9600 bps
+  Serial.begin(4000000); // open the serial port at 9600 bps
 
   establishContact();
   // send a byte to establish contact until receiver responds
@@ -85,7 +85,7 @@ void loop()
     //Serial.println("HOLD: ");
     //Serial.println(hold);
     
-    Serial.setTimeout(50);
+    Serial.setTimeout(4);
     //hold = "X123Y123Z123";
     hold = Serial.readString(); // read it and store it in val
     //Serial.println("HOLD" + hold);
