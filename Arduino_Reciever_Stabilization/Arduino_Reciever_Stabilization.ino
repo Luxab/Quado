@@ -86,6 +86,12 @@ void setup() {
   t.attach(3); // attaches Servo T to PIN 3
   u.attach(4); // attaches Servo U to PIN 4
   v.attach(5); // attaches Servo V to PIN 5
+  
+  s.write(0); // set Servo S to speed 0
+  t.write(0); // set Servo T to speed 0
+  u.write(0); // set Servo U to speed 0
+  v.write(0); // set Servo V to speed 0
+  delay(3000);
 }
 
 void areWeSteering() // Are we steering? defined by the boolean SteerMode
