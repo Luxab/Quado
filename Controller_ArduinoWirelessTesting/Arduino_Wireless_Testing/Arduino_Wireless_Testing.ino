@@ -37,11 +37,12 @@ void setup() {
   radio.begin();
 
   //initialize serial communications at a 9600 baud rate
-  Serial.begin(115200); // open the serial port at 9600 bps
-
+  //Serial.begin(115200); // open the serial port at 9600 bps
+  //Serial.begin(921600);
+  Serial.begin(4000000);
   establishContact();
   // send a byte to establish contact until receiver responds
-  
+  Serial.setTimeout(1);
 
   radio.openWritingPipe(pipe);
   radio.openReadingPipe(1, pipe);
@@ -85,7 +86,7 @@ void loop()
     //Serial.println("HOLD: ");
     //Serial.println(hold);
     
-    Serial.setTimeout(50);
+    
     //hold = "X123Y123Z123";
     hold = Serial.readString(); // read it and store it in val
     //Serial.println("HOLD" + hold);
@@ -94,7 +95,7 @@ void loop()
     hold = hold.substring(0, indexOfC);
     //hold = Serial.readString();
     String theMessage = hold;
-    Serial.println(theMessage);
+    //Serial.println(theMessage);
 
 
 
@@ -103,15 +104,14 @@ void loop()
     {
       char charToSend[1];
       charToSend[0] = theMessage.charAt(i);
-      Serial.println(charToSend[0]);
+      Serial.println(charToSend[0]); // do not comment out, seems to be needed?
       radio.write(charToSend, 15);
     }
 
     msg[0] = 'C';  // sends a terminating string value
     radio.write(msg, 1);
   }
-  //delay(10);
-
+  
   // begin reading -- test
   /*
     radio.openReadingPipe(1, pipe);
