@@ -52,7 +52,7 @@ public void setup() {
   }
   
   //frameRate(30);
-  frameRate(3000);
+  //frameRate(3000);
   
 }
 
@@ -178,28 +178,25 @@ public void serialEvent( Serial myPort) {
 public void draw() {
   getUserInput(); // Polling
   //println(frameRate);\
-  serialEvent(myPort);
 
   background(255, 255, 240);
   // Draw shadows
-  serialEvent(myPort);
   fill(0, 0, 255, 32);
   noStroke();
   
-  serialEvent(myPort);
+
   // Show position
   noStroke();
   fill(255, 64, 64, 64);
   ellipse(200-flyUpX+64, 200-flyUpY+64, 20, 20);
-  
-  serialEvent(myPort);
+
   noStroke();
   fill(200, 200, 200, 200);
   ellipse(200, 200-flyUp+64, 20, 20);
-  serialEvent(myPort);
+
   if (keyPressed)
   {
-    println("PROGRAM EMERGENCY CLOSE...");
+    //println("PROGRAM EMERGENCY CLOSE...");
     //System.exit(-1);
   }
 }
