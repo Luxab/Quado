@@ -52,7 +52,7 @@ public void setup() {
   }
   
   //frameRate(30);
-  frameRate(500);
+  frameRate(3000);
   
 }
 
@@ -74,7 +74,7 @@ public void getUserInput() {
   
   // flyUp default value at 200
   
-  if (flyUp < -198 && flyUp > -208)
+  if (flyUp < -193 && flyUp > -213)
   {
     flyUp = -203; // set tolerance, deadzone
   }
@@ -92,7 +92,7 @@ public void getUserInput() {
   //sendZ = (byte)flyUp;
 
 
-  if (flyX < -198 && flyX > -208)
+  if (flyX < -193 && flyX > -213)
   {
     flyX = -203; // set tolerance, deadzone
   }
@@ -105,7 +105,7 @@ public void getUserInput() {
   }
   //sendX = (byte)flyX;
   
-  if (flyY < -198 && flyY > -208)
+  if (flyY < -193 && flyY > -213)
   {
     flyY = -203; // set tolerance, deadzone
   }
@@ -177,23 +177,26 @@ public void serialEvent( Serial myPort) {
 
 public void draw() {
   getUserInput(); // Polling
-  //println(frameRate);
+  //println(frameRate);\
+  serialEvent(myPort);
 
   background(255, 255, 240);
   // Draw shadows
+  serialEvent(myPort);
   fill(0, 0, 255, 32);
   noStroke();
   
+  serialEvent(myPort);
   // Show position
   noStroke();
   fill(255, 64, 64, 64);
   ellipse(200-flyUpX+64, 200-flyUpY+64, 20, 20);
   
-  
+  serialEvent(myPort);
   noStroke();
   fill(200, 200, 200, 200);
   ellipse(200, 200-flyUp+64, 20, 20);
-  
+  serialEvent(myPort);
   if (keyPressed)
   {
     println("PROGRAM EMERGENCY CLOSE...");
