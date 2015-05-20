@@ -109,8 +109,8 @@ void areWeSteering() // Are we steering? defined by the boolean SteerMode
 void stabilization()
 {
      /* Get a new sensor event */
-    sensors_event_t event;
-    accel.getEvent(&event);
+    //sensors_event_t event;
+    //accel.getEvent(&event);
   
     /* Display the results (acceleration is measured in m/s^2) */
    /* Serial.print("X: "); Serial.print(event.acceleration.x); Serial.print("  ");
@@ -118,6 +118,7 @@ void stabilization()
     Serial.print("Z: "); Serial.print(event.acceleration.z); Serial.print("  ");Serial.println("m/s^2 ");
    */
   
+  /*
     int position;  //declares an integer with no value
      int pval = 0; //pval -> previous value. For use with implementing into other code?
      double s1V = 100*abs(event.acceleration.x);
@@ -129,7 +130,8 @@ void stabilization()
      double servo2Pos=map(s2V,0.0,1000.0,pval,60.0);
      double servo3Pos=map(s3V,0.0,1000.0,pval,60.0);
      double servo4Pos=map(s4V,0.0,1000.0,pval,60.0);
-  
+     
+  */
      /* Print servo1Pos -> servo4Pos for Debug Purposes */
      /*
      Serial.println(servo1Pos);
@@ -138,10 +140,12 @@ void stabilization()
      Serial.println(servo4Pos);
      */
   
+  /*
      motorInXL += servo1Pos;
      motorInXR += servo2Pos;
      motorInYF += servo3Pos;
      motorInYB += servo4Pos;
+     */
 }
 
 void steering()
@@ -226,7 +230,7 @@ if(motorOn)
     }
     else if (theChar == ('S'))
     {
-       stabilization(); 
+       //stabilization(); 
     }
     else if (theChar == ('K'))
     {
@@ -255,9 +259,10 @@ if(motorOn)
       //running the methods that edit the servo values
       steering();
       throttle();
-      stabilization();
+      //stabilization();
 
       //Capping the value output to 179 to prevent accidental unwanted calibration
+      /*
       if (motorInXL >= 180)
         motorInXL = 179;
       if (motorInXR >= 180)
@@ -266,6 +271,17 @@ if(motorOn)
         motorInYB = 179;
       if (motorInYF >= 180)
         motorInYF = 179;
+        */
+        // Capping the value output to 1 for testing
+        if (motorInXL >= 6)
+        motorInXL = 6;
+      if (motorInXR >= 6)
+        motorInXR = 6;
+      if (motorInYB >= 6)
+        motorInYB = 6;
+      if (motorInYF >= 6)
+        motorInYF = 6;
+        
         
       //Experimental spike protection
       if (fabs(motorInXL-lastMotorInXL)>40)

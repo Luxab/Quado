@@ -283,7 +283,7 @@ void loop() //loops and runs the methods, writes servo values
       if (motorInYF >= 180)
         motorInYF = 179;
 */
-        
+        /*
       //Capping the value output to 50 to prevent accidental unwanted throttle during demo
       if (motorInXL >= 51)
         motorInXL = 50;
@@ -293,18 +293,19 @@ void loop() //loops and runs the methods, writes servo values
         motorInYB = 50;
       if (motorInYF >= 51)
         motorInYF = 50;
-        
-        /*
-        // Capping the value output to 1 for testing
-        if (motorInXL >= 1)
-        motorInXL = 1;
-      if (motorInXR >= 1)
-        motorInXR = 1;
-      if (motorInYB >= 1)
-        motorInYB = 1;
-      if (motorInYF >= 1)
-        motorInYF = 1;
         */
+        
+        
+        // Capping the value output to 1 for testing
+        if (motorInXL >= 6)
+        motorInXL = 6;
+      if (motorInXR >= 6)
+        motorInXR = 6;
+      if (motorInYB >= 6)
+        motorInYB = 6;
+      if (motorInYF >= 6)
+        motorInYF = 6;
+        
         
         //Experimental spike protection
       if (fabs(motorInXL-lastMotorInXL)>40)
