@@ -84,7 +84,7 @@ void setup() {
   */
 
   s.attach(2); // attaches Servo S to PIN 2
-  t.attach(3); // attaches Servo T to PIN 3
+  t.attach(6); // attaches Servo T to PIN 3
   u.attach(4); // attaches Servo U to PIN 4
   v.attach(5); // attaches Servo V to PIN 5
 }

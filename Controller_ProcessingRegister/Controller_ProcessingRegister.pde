@@ -20,7 +20,7 @@ byte sendY, sendZ, sendX;
 int val, flyUpZ, flyUpX, flyUpY;
 Serial myPort;
 String v;
-boolean firstContact = false;
+boolean firstContact = false, emerStab = false, killMot = false;
 
 // This one is essential
 ControlIO control;
@@ -30,23 +30,30 @@ ControlIO control;
 ControlDevice device;
 
 // A device will have some combination of buttons, hats and sliders
-ControlButton button;
+ControlButton button, buttonKillMot;
 ControlHat hat;
 ControlSlider slider;
 public void setup() {
   size(400, 400);
   String portName = Serial.list()[0];              //list serial ports, save the first one as portName
-  //myPort = new Serial(this, portName, 115200); 
+  myPort = new Serial(this, portName, 115200); 
   //myPort = new Serial(this, portName, 921600); 
-  myPort = new Serial(this, portName, 4000000); 
+  //myPort = new Serial(this, portName, 4000000); 
   control = ControlIO.getInstance(this);
   device = control.getDevice("Controller (XUSB Gamepad)");
+  button = device.getButton("Button 0"); // can change
+  buttonKillMot = device.getButton("Button 1");
+  
   //device = control.getDevice("Mouse");
 
   if (device == null) {
     println("No suitable device configured");
     System.exit(-1); // End the program NOW!
   }
+  
+  //frameRate(30);
+  frameRate(500);
+  
 }
 
 // Poll for user input called from the draw() method.
@@ -134,8 +141,10 @@ public void serialEvent( Serial myPort) {
         myPort.write("A");
         println("contact");
       }
-    } else { //if we've already established contact, keep getting and parsing data
-    
+    } 
+    else 
+    { //if we've already established contact, keep getting and parsing data
+      
       //println("SENDING - sendX: " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
       //myPort.write(); // hopefully sends "A" or "B" but may send jibberish or numbers
       myPort.write("X"+flyUpX+"Y"+flyUpY+"Z"+flyUpZ); // sends X,Y,Z to Serial
@@ -149,30 +158,45 @@ public void serialEvent( Serial myPort) {
       */
       // when you've parsed the data you have, ask for more:
       //myPort.write("A");
+      
+      if(button.pressed())
+      {
+       myPort.write("S"); // "S" sent
+       println("SENT - emergencyStabilization"); 
+      }
+      if(buttonKillMot.pressed())
+      {
+       myPort.write("K"); // "K" sent
+       println("SENT - killMot"); 
+      }
+      
+      
     }
   }
 }
 
 public void draw() {
   getUserInput(); // Polling
+  //println(frameRate);
 
   background(255, 255, 240);
   // Draw shadows
   fill(0, 0, 255, 32);
   noStroke();
-
+  
   // Show position
   noStroke();
   fill(255, 64, 64, 64);
   ellipse(200-flyUpX+64, 200-flyUpY+64, 20, 20);
-
+  
+  
   noStroke();
   fill(200, 200, 200, 200);
   ellipse(200, 200-flyUp+64, 20, 20);
+  
   if (keyPressed)
   {
     println("PROGRAM EMERGENCY CLOSE...");
     //System.exit(-1);
   }
 }
-

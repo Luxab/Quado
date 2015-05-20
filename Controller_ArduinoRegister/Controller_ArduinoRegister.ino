@@ -37,8 +37,8 @@ void setup() {
   radio.begin();
 
   //initialize serial communications at a 9600 baud rate
-  Serial.begin(4000000); // open the serial port at 9600 bps
-
+  //Serial.begin(4000000); // open the serial port at 9600 bps
+  Serial.begin(115200);
   establishContact();
   // send a byte to establish contact until receiver responds
   

@@ -27,7 +27,7 @@ String x = "", y = "", z = "";
 int xIndex = 0, yIndex = 0, zIndex = 0;
 String nextLoop = "";
 int decDir = 180; // for x - y changing position
-bool motorIn = true;
+bool motorIn = true, motorOn = true;
 byte send;
 byte addresses[][6] = {"1Node", "2Node"};
 const uint64_t pipe = uint64_t(addresses);
@@ -83,7 +83,7 @@ void setup() {
   */
 
   s.attach(2); // attaches Servo S to PIN 2
-  t.attach(3); // attaches Servo T to PIN 3
+  t.attach(6); // attaches Servo T to PIN 3
   u.attach(4); // attaches Servo U to PIN 4
   v.attach(5); // attaches Servo V to PIN 5
   
@@ -208,7 +208,8 @@ void loop() //loops and runs the methods, writes servo values
   motorInXL = 0, motorInXR = 0,
   motorInYF = 0, motorInYB = 0, motorInZ = 0;
   motorInX = 0, motorInY = 0;
-
+if(motorOn)
+{
   if (radio.available())
   {
     radio.read(msg, 1);
@@ -216,12 +217,20 @@ void loop() //loops and runs the methods, writes servo values
     char theChar = msg[0];
 
     //Serial.println(theChar); -- debug purposes
-
+    
     if (theChar != ('C'))
     {
       //x.concat(theChar);  huh? why is this here....
       theMessage.concat(theChar);
       delay(2);
+    }
+    else if (theChar == ('S'))
+    {
+       stabilization(); 
+    }
+    else if (theChar == ('K'))
+    {
+        motorOn = false;
     }
     else
     {
@@ -302,6 +311,6 @@ void loop() //loops and runs the methods, writes servo values
     t.write(lastMotorInYF);
     u.write(lastMotorInXR);
     v.write(lastMotorInYB);
-
+  }
   }
 }
