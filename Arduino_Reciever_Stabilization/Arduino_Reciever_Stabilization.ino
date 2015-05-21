@@ -235,6 +235,11 @@ if(motorOn)
     else if (theChar == ('K'))
     {
         motorOn = false;
+        
+        lastMotorInXL = 0;
+        lastMotorInYF = 0;
+        lastMotorInXR = 0;
+        lastMotorInYB = 0;
     }
     else
     {
