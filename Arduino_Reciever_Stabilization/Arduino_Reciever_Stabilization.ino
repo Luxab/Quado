@@ -133,12 +133,12 @@ void stabilization()
   servo4Pos = map(AcY,0,-20000,0,50);
 
   
-  /*
+  
      motorInXL += servo1Pos;
      motorInXR += servo2Pos;
      motorInYF += servo3Pos;
      motorInYB += servo4Pos;
-     */
+     
 }
 
 void steering()
@@ -228,6 +228,10 @@ if(motorOn)
     else if (theChar == ('K'))
     {
         motorOn = false;
+       lastMotorInXL = 0;
+       lastMotorInYF = 0;
+       lastMotorInXR = 0;
+       lastMotorInYB = 0;
     }
     else
     {
