@@ -39,10 +39,10 @@ double s1V;
 double s3V;
 double s2V;
 double s4V;
-double servo1Pos;
-double servo2Pos;
-double servo3Pos;
-double servo4Pos;
+double tempStableS;
+double tempStableU;
+double tempStableT;
+double tempStableV;
 
 int signalInX = 0, signalInY = 0, signalInZ = 0; // them data value instance fields
 int motorInS = 0, motorInU = 0,
@@ -127,17 +127,16 @@ void stabilization()
   GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L) 
   
-  servo1Pos = map(AcX,0,20000,0,50);
-  servo2Pos = map(AcX,0,-20000,0,50);
-  servo3Pos = map(AcY,0,20000,0,50);
-  servo4Pos = map(AcY,0,-20000,0,50);
-
+  tempStableS = map(AcX,0,20000,0,50);
+  tempStableT = map(AcY,0,-20000,0,50);
+  tempStableU = map(AcY,0,20000,0,50);
+  tempStableV = map(AcX,0,-20000,0,50);
   
   
-     motorInS += servo1Pos;
-     motorInU += servo2Pos;
-     motorInT += servo3Pos;
-     motorInV += servo4Pos;
+     motorInS += tempStableS;
+     motorInT += tempStableT;
+     motorInU += tempStableU;
+     motorInV += tempStableV;
      
 }
 
