@@ -215,13 +215,7 @@ if(motorOn)
 
     //Serial.println(theChar); -- debug purposes
     
-    if (theChar != ('C'))
-    {
-      //x.concat(theChar);  huh? why is this here....
-      theMessage.concat(theChar);
-      delay(2);
-    }
-    else if (theChar == ('S'))
+    if (theChar == ('S'))
     {
        //stabilization(); 
     }
@@ -232,7 +226,19 @@ if(motorOn)
        lastMotorInYF = 0;
        lastMotorInXR = 0;
        lastMotorInYB = 0;
+       
+       s.write(0);
+       t.write(0);
+       u.write(0);
+       v.write(0);
     }
+    else if (theChar != ('C'))
+    {
+      //x.concat(theChar);  huh? why is this here....
+      theMessage.concat(theChar);
+      delay(2);
+    }
+    
     else
     {
       //Serial.println(theMessage); -- debug purposes

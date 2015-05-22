@@ -52,7 +52,7 @@ public void setup() {
   }
   
   //frameRate(30);
-  frameRate(30);
+  frameRate(3000);
   
 }
 
@@ -121,6 +121,8 @@ public void getUserInput() {
   flyUpX = (int)flyX;
   flyUpY = (int)flyY;
 }
+
+
 
 public void serialEvent( Serial myPort) {
   //put the incoming data into a String - 
@@ -199,4 +201,5 @@ public void draw() {
     //println("PROGRAM EMERGENCY CLOSE...");
     //System.exit(-1);
   }
+
 }

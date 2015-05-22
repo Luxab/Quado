@@ -85,7 +85,7 @@ void loop()
     //Serial.println("HOLD: ");
     //Serial.println(hold);
     
-    Serial.setTimeout(4);
+    Serial.setTimeout(3);
     //hold = "X123Y123Z123";
     hold = Serial.readString(); // read it and store it in val
     //Serial.println("HOLD" + hold);
@@ -94,7 +94,7 @@ void loop()
     hold = hold.substring(0, indexOfC);
     //hold = Serial.readString();
     String theMessage = hold;
-    Serial.println(theMessage);
+    //Serial.println(theMessage);
 
 
 
