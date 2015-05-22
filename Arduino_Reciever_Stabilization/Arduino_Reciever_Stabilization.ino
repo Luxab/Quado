@@ -128,8 +128,8 @@ void stabilization()
   GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L) 
   
   servo1Pos = map(AcX,0,20000,0,50);
-  servo2Pos = map(AcY,0,-20000,0,50);
-  servo3Pos = map(AcX,0,20000,0,50);
+  servo2Pos = map(AcX,0,-20000,0,50);
+  servo3Pos = map(AcY,0,20000,0,50);
   servo4Pos = map(AcY,0,-20000,0,50);
 
   
