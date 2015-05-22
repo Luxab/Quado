@@ -21,8 +21,8 @@ int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
 Servo s, t, u, v;
 bool on = true;
 int val = 0; // Data received from the serial port
-int lastMotorInXL = 0, lastMotorInXR = 0,
-    lastMotorInYB = 0, lastMotorInYF = 0;
+int lastmotorInS = 0, lastmotorInU = 0,
+    lastmotorInV = 0, lastmotorInT = 0;
 String x = "", y = "", z = "";
 int xIndex = 0, yIndex = 0, zIndex = 0;
 String nextLoop = "";
@@ -45,8 +45,8 @@ double servo3Pos;
 double servo4Pos;
 
 int signalInX = 0, signalInY = 0, signalInZ = 0; // them data value instance fields
-int motorInXL = 0, motorInXR = 0,
-    motorInYF = 0, motorInYB = 0, motorInZ = 0;
+int motorInS = 0, motorInU = 0,
+    motorInT = 0, motorInV = 0, motorInZ = 0;
 int motorInX = 0, motorInY = 0;
 
 int def = 0;
@@ -134,10 +134,10 @@ void stabilization()
 
   
   
-     motorInXL += servo1Pos;
-     motorInXR += servo2Pos;
-     motorInYF += servo3Pos;
-     motorInYB += servo4Pos;
+     motorInS += servo1Pos;
+     motorInU += servo2Pos;
+     motorInT += servo3Pos;
+     motorInV += servo4Pos;
      
 }
 
@@ -150,24 +150,24 @@ void steering()
 
   if (signalInX < 0)
   {
-    motorInXL = (signalInX * -1) - 5;
-    motorInXR = signalInX * -1;
+    motorInS = (signalInX * -1) - 5;
+    motorInU = signalInX * -1;
   }
   else if (signalInX > 0)
   {
-    motorInXL = signalInX;
-    motorInXR = signalInX - 5;
+    motorInS = signalInX;
+    motorInU = signalInX - 5;
   }
 
   if (signalInY < 0)
   {
-    motorInYB = (signalInY * -1) - 5;
-    motorInYF = (signalInY * -1);
+    motorInV = (signalInY * -1) - 5;
+    motorInT = (signalInY * -1);
   }
   else if (signalInY > 0)
   {
-    motorInYB = signalInY;
-    motorInYF = signalInY - 5;
+    motorInV = signalInY;
+    motorInT = signalInY - 5;
   }
 
   // if Right Controller Stick is moved Down - signalInZ = 0
@@ -193,17 +193,17 @@ void throttle()
     signalInZ = 0;
   }
 
-  motorInXL += signalInZ;
-  motorInXR += signalInZ;
-  motorInYF += signalInZ;
-  motorInYB += signalInZ;
+  motorInS += signalInZ;
+  motorInU += signalInZ;
+  motorInT += signalInZ;
+  motorInV += signalInZ;
 }
 
 void loop() //loops and runs the methods, writes servo values
 {
   signalInX = 0, signalInY = 0, signalInZ = 0;
-  motorInXL = 0, motorInXR = 0,
-  motorInYF = 0, motorInYB = 0, motorInZ = 0;
+  motorInS = 0, motorInU = 0,
+  motorInT = 0, motorInV = 0, motorInZ = 0;
   motorInX = 0, motorInY = 0;
 if(motorOn)
 {
@@ -238,10 +238,10 @@ if(motorOn)
 
 
       motorOn = false;
-       lastMotorInXL = 0;
-       lastMotorInYF = 0;
-       lastMotorInXR = 0;
-       lastMotorInYB = 0;
+       lastmotorInS = 0;
+       lastmotorInT = 0;
+       lastmotorInU = 0;
+       lastmotorInV = 0;
        
        s.write(0);
        t.write(0);
@@ -291,53 +291,53 @@ if(motorOn)
 
       //Capping the value output to 179 to prevent accidental unwanted calibration
       /*
-      if (motorInXL >= 180)
-        motorInXL = 179;
-      if (motorInXR >= 180)
-        motorInXR = 179;
-      if (motorInYB >= 180)
-        motorInYB = 179;
-      if (motorInYF >= 180)
-        motorInYF = 179;
+      if (motorInS >= 180)
+        motorInS = 179;
+      if (motorInU >= 180)
+        motorInU = 179;
+      if (motorInV >= 180)
+        motorInV = 179;
+      if (motorInT >= 180)
+        motorInT = 179;
         */
         // Capping the value output to 1 for testing
-        if (motorInXL >= 10)
-        motorInXL = 10;
-      if (motorInXR >= 10)
-        motorInXR = 10;
-      if (motorInYB >= 10)
-        motorInYB = 10;
-      if (motorInYF >= 10)
-        motorInYF = 10;  
+        if (motorInS >= 10)
+        motorInS = 10;
+      if (motorInU >= 10)
+        motorInU = 10;
+      if (motorInV >= 10)
+        motorInV = 10;
+      if (motorInT >= 10)
+        motorInT = 10;  
         
         
       //Experimental spike protection
-      if (fabs(motorInXL-lastMotorInXL)>30)
-        motorInXL = lastMotorInXL;
-      if (fabs(motorInXR-lastMotorInXR)>30)
-        motorInXR = lastMotorInXR;
-      if (fabs(motorInYF-lastMotorInYF)>30)
-        motorInYF = lastMotorInYF;
-      if (fabs(motorInYB-lastMotorInYB)>30)
-        motorInYB = lastMotorInYB;
+      if (fabs(motorInS-lastmotorInS)>30)
+        motorInS = lastmotorInS;
+      if (fabs(motorInU-lastmotorInU)>30)
+        motorInU = lastmotorInU;
+      if (fabs(motorInT-lastmotorInT)>30)
+        motorInT = lastmotorInT;
+      if (fabs(motorInV-lastmotorInV)>30)
+        motorInV = lastmotorInV;
 
       //Writing them servo values to the servos
-      s.write(motorInXL);
-      t.write(motorInYF);
-      u.write(motorInXR);
-      v.write(motorInYB);
+      s.write(motorInS);
+      t.write(motorInT);
+      u.write(motorInU);
+      v.write(motorInV);
 
       //temporarily storing the values
-      lastMotorInXL = motorInXL;
-      lastMotorInXR = motorInXR;
-      lastMotorInYF = motorInYF;
-      lastMotorInYB = motorInYB;
+      lastmotorInS = motorInS;
+      lastmotorInU = motorInU;
+      lastmotorInT = motorInT;
+      lastmotorInV = motorInV;
 
       //Readout of what's being sent do the Servos
-      Serial.print("MotorInXL: "); Serial.println(motorInXL);
-      Serial.print("MotorInYF: "); Serial.println(motorInYF);
-      Serial.print("MotorInXR: "); Serial.println(motorInXR);
-      Serial.print("MotorInYB: "); Serial.println(motorInYB);
+      Serial.print("motorInS: "); Serial.println(motorInS);
+      Serial.print("motorInT: "); Serial.println(motorInT);
+      Serial.print("motorInU: "); Serial.println(motorInU);
+      Serial.print("motorInV: "); Serial.println(motorInV);
 
       theMessage = "";
     }
@@ -346,15 +346,15 @@ if(motorOn)
   else //if no radio
   {
     //    Serial.println("No Radio.");
-    //    Serial.println(lastMotorInXL);
-    //    Serial.println(lastMotorInYF);
-    //    Serial.println(lastMotorInXR);
-    //    Serial.println(lastMotorInYB);
+    //    Serial.println(lastmotorInS);
+    //    Serial.println(lastmotorInT);
+    //    Serial.println(lastmotorInU);
+    //    Serial.println(lastmotorInV);
     //
-    s.write(lastMotorInXL);
-    t.write(lastMotorInYF);
-    u.write(lastMotorInXR);
-    v.write(lastMotorInYB);
+    s.write(lastmotorInS);
+    t.write(lastmotorInT);
+    u.write(lastmotorInU);
+    v.write(lastmotorInV);
   }
   }
 }
