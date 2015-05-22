@@ -52,7 +52,7 @@ public void setup() {
   }
   
   //frameRate(30);
-  frameRate(3000);
+  frameRate(60);
   
 }
 

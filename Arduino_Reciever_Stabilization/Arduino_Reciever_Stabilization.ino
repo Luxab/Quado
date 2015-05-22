@@ -292,7 +292,7 @@ if(motorOn)
       if (motorInYB >= 6)
         motorInYB = 6;
       if (motorInYF >= 6)
-        motorInYF = 6;
+        motorInYF = 6;  
         
         
       //Experimental spike protection
