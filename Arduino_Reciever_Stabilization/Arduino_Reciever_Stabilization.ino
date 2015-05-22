@@ -221,7 +221,23 @@ if(motorOn)
     }
     else if (theChar == ('K'))
     {
-        motorOn = false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      motorOn = false;
        lastMotorInXL = 0;
        lastMotorInYF = 0;
        lastMotorInXR = 0;
@@ -285,24 +301,24 @@ if(motorOn)
         motorInYF = 179;
         */
         // Capping the value output to 1 for testing
-        if (motorInXL >= 6)
-        motorInXL = 6;
-      if (motorInXR >= 6)
-        motorInXR = 6;
-      if (motorInYB >= 6)
-        motorInYB = 6;
-      if (motorInYF >= 6)
-        motorInYF = 6;  
+        if (motorInXL >= 10)
+        motorInXL = 10;
+      if (motorInXR >= 10)
+        motorInXR = 10;
+      if (motorInYB >= 10)
+        motorInYB = 10;
+      if (motorInYF >= 10)
+        motorInYF = 10;  
         
         
       //Experimental spike protection
-      if (fabs(motorInXL-lastMotorInXL)>40)
+      if (fabs(motorInXL-lastMotorInXL)>30)
         motorInXL = lastMotorInXL;
-      if (fabs(motorInXR-lastMotorInXR)>40)
+      if (fabs(motorInXR-lastMotorInXR)>30)
         motorInXR = lastMotorInXR;
-      if (fabs(motorInYF-lastMotorInYF)>40)
+      if (fabs(motorInYF-lastMotorInYF)>30)
         motorInYF = lastMotorInYF;
-      if (fabs(motorInYB-lastMotorInYB)>40)
+      if (fabs(motorInYB-lastMotorInYB)>30)
         motorInYB = lastMotorInYB;
 
       //Writing them servo values to the servos

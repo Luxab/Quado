@@ -132,7 +132,7 @@ public void serialEvent( Serial myPort) {
   if (v != null) {
     //trim whitespace and formatting characters (like carriage return)
     v = trim(v);
-    println(v);
+    println(v);  // removing this MAY reduce lag[?]
 
     //look for our 'A' string to start the handshake
     //if it's there, clear the buffer, and send a request for data
