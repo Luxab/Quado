@@ -300,14 +300,14 @@ if(motorOn)
         motorInT = 179;
         */
         // Capping the value output to 1 for testing
-        if (motorInS >= 10)
-        motorInS = 10;
-      if (motorInU >= 10)
-        motorInU = 10;
-      if (motorInV >= 10)
-        motorInV = 10;
-      if (motorInT >= 10)
-        motorInT = 10;  
+        if (motorInS >= 15)
+        motorInS = 15;
+      if (motorInU >= 15)
+        motorInU = 15;
+      if (motorInV >= 15)
+        motorInV = 15;
+      if (motorInT >= 15)
+        motorInT = 15;  
         
         
       //Experimental spike protection
