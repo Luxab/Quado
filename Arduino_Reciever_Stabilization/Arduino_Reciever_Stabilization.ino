@@ -34,6 +34,8 @@ const uint64_t pipe = uint64_t(addresses);
 int msg[15];
 String theMessage = "";
 
+int count = 0;
+
 //some more instance fields
 double s1V;
 double s3V;
@@ -200,6 +202,11 @@ void throttle()
 
 void loop() //loops and runs the methods, writes servo values
 {
+  
+//  if(count<51)
+//  {
+//   count ++; 
+//  }
   signalInX = 0, signalInY = 0, signalInZ = 0;
   motorInS = 0, motorInU = 0,
   motorInT = 0, motorInV = 0, motorInZ = 0;
@@ -218,7 +225,7 @@ if(motorOn)
     {
        //stabilization(); 
     }
-    else if (theChar == ('K') || AcZ<5000)
+    else if (theChar == ('K') || AcZ<0)
     {
 
 
