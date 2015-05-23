@@ -218,7 +218,7 @@ if(motorOn)
     {
        //stabilization(); 
     }
-    else if (theChar == ('K'))
+    else if (theChar == ('K') || AcZ<5000)
     {
 
 
@@ -300,14 +300,14 @@ if(motorOn)
         motorInT = 179;
         */
         // Capping the value output to 1 for testing
-        if (motorInS >= 15)
-        motorInS = 15;
-      if (motorInU >= 15)
-        motorInU = 15;
-      if (motorInV >= 15)
-        motorInV = 15;
-      if (motorInT >= 15)
-        motorInT = 15;  
+        if (motorInS >= 20)
+        motorInS = 20;
+      if (motorInU >= 20)
+        motorInU = 20;
+      if (motorInV >= 20)
+        motorInV = 20;
+      if (motorInT >= 20)
+        motorInT = 20;  
         
         
       //Experimental spike protection
