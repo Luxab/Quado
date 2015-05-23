@@ -129,10 +129,10 @@ void stabilization()
   GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L) 
   
-  tempStableS = map(AcX,0,20000,0,50);
-  tempStableT = map(AcY,0,-20000,0,50);
-  tempStableU = map(AcY,0,20000,0,50);
-  tempStableV = map(AcX,0,-20000,0,50);
+  tempStableS = map(AcX,5000,20000,0,30);
+  tempStableT = map(AcY,-5000,-20000,0,30);
+  tempStableU = map(AcY,5000,20000,0,30);
+  tempStableV = map(AcX,-5000,-20000,0,30);
   
   
      motorInS += tempStableS;
@@ -307,14 +307,14 @@ if(motorOn)
         motorInT = 179;
         */
         // Capping the value output to 1 for testing
-        if (motorInS >= 20)
-        motorInS = 20;
-      if (motorInU >= 20)
-        motorInU = 20;
-      if (motorInV >= 20)
-        motorInV = 20;
-      if (motorInT >= 20)
-        motorInT = 20;  
+        if (motorInS >= 50)
+        motorInS = 50;
+      if (motorInU >= 50)
+        motorInU = 50;
+      if (motorInV >= 50)
+        motorInV = 50;
+      if (motorInT >= 50)
+        motorInT = 50;  
         
         
       //Experimental spike protection
