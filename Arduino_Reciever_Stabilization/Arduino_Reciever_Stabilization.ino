@@ -1,10 +1,16 @@
 #include <Servo.h>
 #include <SPI.h>
 #include "RF24.h"
-
 #include<Wire.h>
-const int MPU=0x68;  // I2C address of the MPU-6050
-int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
+
+/*
+  If I read the manual correctly, you MUST restrict roll or pitch; but not both.
+  Not doing it results in infinite solutions and some math stuff I don't know.
+  Meaning, pitch or roll has to be -90 to +90 while the other one is -180 to +180.
+  In aerospace, they restrict pitch; in consumer hardawre (Microsoft and Android) they restrict roll.
+  So to me it makes sense to restrict pitch.
+*/
+#define RESTRICT_PITCH // comment out to restrict roll to 90 deg instead
 
 /*
   -Scripps Ranch High School Robotics Team-
@@ -16,7 +22,25 @@ int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
   ( ͡° ͜ʖ ͡°)
 */
 
+/*
+  Complementary filter and I2C rework by Elliot Yoon.
+  This is completely untested as I have nothing to test it on, so please use caution.
+  Lots of this code was taken from Kristian Lauszus from TKJ Electronics, under GNU GPL2.
+  Web      :  http://www.tkjelectronics.com
+  e-mail   :  kristianl@tkjelectronics.com
+  Source   :  http://forum.arduino.cc/index.php?topic=58048.0
+*/
 
+double gyroXangle, gyroYangle; // angle calculated with gyro
+double compAngleX, compAngleY; // angle calculated with complementary filter
+double mPitch, mRoll;
+double dt; // delta time
+
+uint32_t timer;
+uint8_t i2cData[14]; // buffer for I2C data
+
+const int MPU = 0x68; // I2C address of the MPU-6050
+int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // IMU data
 
 Servo s, t, u, v;
 bool on = true;
@@ -61,15 +85,55 @@ RF24 radio(9, 10);
 void setup() {
 
   radio.begin();
+  Serial.begin(115200); // open the serial port at 9600 bps
 
   Wire.begin();
+  /*
   Wire.beginTransmission(MPU);
   Wire.write(0x6B);  // PWR_MGMT_1 register
   Wire.write(0);     // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
+  */
+  TWBR = ((F_CPU / 400000L) - 16) / 2; // Set I2C frequency to 400kHz
 
+  i2cData[0] = 7; // Set the sample rate to 1000Hz - 8kHz/(7+1) = 1000Hz
+  i2cData[1] = 0x00; // Disable FSYNC and set 260 Hz Acc filtering, 256 Hz Gyro filtering, 8 KHz sampling
+  i2cData[2] = 0x00; // Set Gyro Full Scale Range to ±250deg/s
+  i2cData[3] = 0x00; // Set Accelerometer Full Scale Range to ±2g
+  while (i2cWrite(0x19, i2cData, 4, false)); // Write to all four registers at once
+  while (i2cWrite(0x6B, 0x01, true)); // PLL with X axis gyroscope reference and disable sleep mode
 
-  Serial.begin(115200); // open the serial port at 9600 bps
+  while (i2cRead(0x75, i2cData, 1));
+  if (i2cData[0] != 0x68) { // Read "WHO_AM_I" register
+    Serial.print(F("Error reading sensor"));
+    while (1);
+  }
+
+  delay(100); // wait for sensor to stabilize
+
+  /* Set kalman and gyro starting angle */
+  while (i2cRead(0x3B, i2cData, 6));
+  AcX = (i2cData[0] << 8) | i2cData[1];
+  AcY = (i2cData[2] << 8) | i2cData[3];
+  AcZ = (i2cData[4] << 8) | i2cData[5];
+
+  // Source: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf eq. 25 and eq. 26
+  // atan2 outputs the value of -π to π (radians) - see http://en.wikipedia.org/wiki/Atan2
+  // It is then converted from radians to degrees
+#ifdef RESTRICT_PITCH // Eq. 25 and 26
+  double roll  = atan2(AcY, AcZ) * RAD_TO_DEG;
+  double pitch = atan(-AcX / sqrt(AcY * AcY + AcZ * AcZ)) * RAD_TO_DEG;
+#else // Eq. 28 and 29
+  double roll  = atan(AcY / sqrt(AcX * AcX + AcZ * AcZ)) * RAD_TO_DEG;
+  double pitch = atan2(-AcX, AcZ) * RAD_TO_DEG;
+#endif
+
+  gyroXangle = roll;
+  gyroYangle = pitch;
+  compAngleX = roll;
+  compAngleY = pitch;
+
+  timer = micros();
 
   radio.openWritingPipe(pipe);
   radio.openReadingPipe(1, pipe);
@@ -95,7 +159,7 @@ void setup() {
   t.attach(6); // attaches Servo T to PIN 3
   u.attach(4); // attaches Servo U to PIN 4
   v.attach(5); // attaches Servo V to PIN 5
-  
+
   s.write(0); // set Servo S to speed 0
   t.write(0); // set Servo T to speed 0
   u.write(0); // set Servo U to speed 0
@@ -103,43 +167,195 @@ void setup() {
   delay(3000);
 }
 
+/*
+ updates instance fields with data from IMU
+ should be called BEFORE ComplementaryFilter() is called
+ currently called in stabalization()
+*/
+void updateIMU() {
+  // update values
+  while (i2cRead(0x3B, i2cData, 14));
+  AcX = ((i2cData[0] << 8) | i2cData[1]);
+  AcY = ((i2cData[2] << 8) | i2cData[3]);
+  AcZ = ((i2cData[4] << 8) | i2cData[5]);
+  Tmp = (i2cData[6] << 8) | i2cData[7];
+  GyX = (i2cData[8] << 8) | i2cData[9];
+  GyY = (i2cData[10] << 8) | i2cData[11];
+  GyZ = (i2cData[12] << 8) | i2cData[13];
+
+  dt = (double)(micros() - timer) / 1000000; // Calculate delta time
+  timer = micros();
+}
+
+/*
+  resets gyro angle if it drifts too much.
+  should be called AFTER ComplementaryFilter() is called
+  currently called in stabalization()
+  returns true if gyro drift was fixed
+*/
+bool fixGyroDrift() {
+  bool fixed = false;
+  if (gyroXangle < -180 || gyroXangle > 180) {
+    gyroXangle = compAngleX;
+    fixed = true;
+  }
+  if (gyroYangle < -180 || gyroYangle > 180) {
+    gyroYangle = compAngleY;
+    fixed = true;
+  }
+  return fixed;
+}
+
+/*
+  complementary filter stuff
+  should be called AFTER updateIMU() is called
+  currently called in stabalization()
+*/
+void ComplementaryFilter() {
+  // Source: http://www.freescale.com/files/sensors/doc/app_note/AN3461.pdf eq. 25 and eq. 26
+  // atan2 outputs the value of -π to π (radians) - see http://en.wikipedia.org/wiki/Atan2
+  // It is then converted from radians to degrees
+#ifdef RESTRICT_PITCH // Eq. 25 and 26
+  double roll  = atan2(AcY, AcZ) * RAD_TO_DEG;
+  double pitch = atan(-AcX / sqrt(AcY * AcY + AcZ * AcZ)) * RAD_TO_DEG;
+#else // Eq. 28 and 29
+  double roll  = atan(AcY / sqrt(AcX * AcX + AcZ * AcZ)) * RAD_TO_DEG;
+  double pitch = atan2(-AcX, AcZ) * RAD_TO_DEG;
+#endif
+
+  // no clue what 131.0 is but okay
+  double gyroXrate = GyX / 131.0; // Convert to deg/s
+  double gyroYrate = GyY / 131.0; // Convert to deg/s
+
+#ifdef RESTRICT_PITCH
+  // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees
+  //if ((roll < -90 && kalAngleX > 90) || (roll > 90 && kalAngleX < -90)) {
+  if ((roll < -90 && compAngleX > 90) || (roll > 90 && compAngleX < -90)) {
+    //kalmanX.setAngle(roll);
+    compAngleX = roll;
+    //kalAngleX = roll;
+    gyroXangle = roll;
+  } else {
+    //kalAngleX = kalmanX.getAngle(roll, gyroXrate, dt); // Calculate the angle using a Kalman filter
+    compAngleX = 0.93 * (compAngleX + gyroXrate * dt) + 0.07 * roll; // Calculate the angle using a Complimentary filter
+  }
+
+  //if (abs(kalAngleX) > 90)
+  if (abs(compAngleX) > 90) {
+    gyroYrate = -gyroYrate; // Invert rate, so it fits the restriced accelerometer reading
+  }
+  //kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt);
+  compAngleY = 0.93 * (compAngleY + gyroYrate * dt) + 0.07 * pitch;
+#else
+  // This fixes the transition problem when the accelerometer angle jumps between -180 and 180 degrees
+  //if ((pitch < -90 && kalAngleY > 90) || (pitch > 90 && kalAngleY < -90)) {
+  if ((pitch < -90 && compAngleY > 90) || (pitch > 90 && compAngleY < -90)) {
+    //kalmanY.setAngle(pitch);
+    compAngleY = pitch;
+    //kalAngleY = pitch;
+    gyroYangle = pitch;
+  } else {
+    //kalAngleY = kalmanY.getAngle(pitch, gyroYrate, dt); // Calculate the angle using a Kalman filter
+    compAngleY = 0.93 * (compAngleY + gyroYrate * dt) + 0.07 * pitch;
+  }
+
+  //if (abs(kalAngleY) > 90)
+  if (abs(compAngleY) > 90) {
+    gyroXrate = -gyroXrate; // Invert rate, so it fits the restriced accelerometer reading
+  }
+  //kalAngleX = kalmanX.getAngle(roll, gyroXrate, dt); // Calculate the angle using a Kalman filter
+  compAngleX = 0.93 * (compAngleX + gyroXrate * dt) + 0.07 * roll;
+#endif
+
+  gyroXangle += gyroXrate * dt; // Calculate gyro angle without any filter
+  gyroYangle += gyroYrate * dt;
+  mPitch = pitch;
+  mRoll = roll;
+  //gyroXangle += kalmanX.getRate() * dt; // Calculate gyro angle using the unbiased rate
+  //gyroYangle += kalmanY.getRate() * dt;
+
+  /*
+    original equation values are supposed to be 0.98 and 0.02, respectively
+    however, this person used 0.93 and 0.07; leaving it like this because there must be a reason why
+    you can use any two values as long as they add up to 1.00
+    original equation: angle = 0.98 * (angle + gyrData * dt) + 0.02 * (accData)
+  */
+  // commented out because this is called above in the preprocessor if statement blocks
+  //compAngleX = 0.93 * (compAngleX + gyroXrate * dt) + 0.07 * roll; // Calculate the angle using a Complimentary filter
+  //compAngleY = 0.93 * (compAngleY + gyroYrate * dt) + 0.07 * pitch;
+}
+
 void areWeSteering() // Are we steering? defined by the boolean SteerMode
 {
-    if (signalInX == def && signalInY == def)
-    {
-     steerMode = false;
-    }
-    else
-    {
-     steerMode = true;
-    }
+  /*
+  if (signalInX == def && signalInY == def)
+  {
+    steerMode = false;
+  }
+  else
+  {
+    steerMode = true;
+  }
+  */
+  steerMode = !(signalInX == def && signalInY == def); // cleaner way of doing it
 }
 
 void stabilization()
 {
+  /*
   Wire.beginTransmission(MPU);
   Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
   Wire.endTransmission(false);
-  Wire.requestFrom(MPU,14,true);  // request a total of 14 registers
-  AcX=Wire.read()<<8|Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)     
-  AcY=Wire.read()<<8|Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-  AcZ=Wire.read()<<8|Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
-  Tmp=Wire.read()<<8|Wire.read();  // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
-  GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
-  GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
-  GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L) 
-  
-  tempStableS = map(AcX,5000,20000,0,30);
-  tempStableT = map(AcY,-5000,-20000,0,30);
-  tempStableU = map(AcY,5000,20000,0,30);
-  tempStableV = map(AcX,-5000,-20000,0,30);
-  
-  
-     motorInS += tempStableS;
-     motorInT += tempStableT;
-     motorInU += tempStableU;
-     motorInV += tempStableV;
-     
+  Wire.requestFrom(MPU, 14, true); // request a total of 14 registers
+  AcX = Wire.read() << 8 | Wire.read(); // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+  AcY = Wire.read() << 8 | Wire.read(); // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  AcZ = Wire.read() << 8 | Wire.read(); // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  Tmp = Wire.read() << 8 | Wire.read(); // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+  GyX = Wire.read() << 8 | Wire.read(); // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+  GyY = Wire.read() << 8 | Wire.read(); // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+  GyZ = Wire.read() << 8 | Wire.read(); // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
+  */
+
+  /*
+    order MUST be:
+    updateIMU();
+    ComplementaryFilter();
+    fixGyroDrift();
+  */
+  updateIMU();
+  ComplementaryFilter();
+  fixGyroDrift();
+
+  /*
+  tempStableS = map(AcX, 5000, 20000, 0, 30);
+  tempStableT = map(AcY, -5000, -20000, 0, 30);
+  tempStableU = map(AcY, 5000, 20000, 0, 30);
+  tempStableV = map(AcX, -5000, -20000, 0, 30);
+  */
+
+  // gain is sensitivity of stabilization
+  // TODO: gain is set to arbitrary numbers, please determine values
+  // http://technicaladventure.blogspot.com/2012/09/quadcopter-stabilization-control-system.html
+  double pitchGain = 0.05;
+  double rollGain = 0.05;
+
+  /*
+    s - ccw - 1
+    t - cw - 2
+    u - cw - 3
+    v - ccw - 4
+  */
+
+  // TODO: correct which motors use what 
+  tempStableS = mRoll * rollGain;
+  tempStableT = mPitch * pitchGain;
+  tempStableU = mPitch * pitchGain;
+  tempStableV = mRoll * rollGain;
+
+  motorInS -= tempStableS;
+  motorInT += tempStableT;
+  motorInU -= tempStableU;
+  motorInV += tempStableV;
 }
 
 void steering()
@@ -179,11 +395,7 @@ void steering()
   {
     signalInZ = 0;
   }
-
   //deleted the throttle portion to fit the steering method
-
-
-
 }
 
 
@@ -193,7 +405,6 @@ void throttle()
   {
     signalInZ = 0;
   }
-
   motorInS += signalInZ;
   motorInU += signalInZ;
   motorInT += signalInZ;
@@ -202,165 +413,142 @@ void throttle()
 
 void loop() //loops and runs the methods, writes servo values
 {
-  
-//  if(count<51)
-//  {
-//   count ++; 
-//  }
+
+  //  if(count<51)
+  //  {
+  //   count ++;
+  //  }
   signalInX = 0, signalInY = 0, signalInZ = 0;
   motorInS = 0, motorInU = 0,
   motorInT = 0, motorInV = 0, motorInZ = 0;
   motorInX = 0, motorInY = 0;
-if(motorOn)
-{
-  if (radio.available())
+  if (motorOn)
   {
-    radio.read(msg, 1);
-
-    char theChar = msg[0];
-
-    //Serial.println(theChar); -- debug purposes
-    
-    if (theChar == ('S'))
+    if (radio.available())
     {
-       //stabilization(); 
-    }
-    else if (theChar == ('K') || AcZ<0)
-    {
+      radio.read(msg, 1);
 
+      char theChar = msg[0];
 
+      //Serial.println(theChar); -- debug purposes
 
+      if (theChar == ('S'))
+      {
+        //stabilization();
+      }
+      else if (theChar == ('K') || AcZ < 0)
+      {
+        motorOn = false;
+        lastmotorInS = 0;
+        lastmotorInT = 0;
+        lastmotorInU = 0;
+        lastmotorInV = 0;
 
+        s.write(0);
+        t.write(0);
+        u.write(0);
+        v.write(0);
+      }
+      else if (theChar != ('C'))
+      {
+        //x.concat(theChar);  huh? why is this here....
+        theMessage.concat(theChar);
+        delay(2);
+      }
+      else
+      {
+        //Serial.println(theMessage); -- debug purposes
 
+        xIndex = theMessage.indexOf("X");
+        yIndex = theMessage.indexOf("Y");
+        zIndex = theMessage.indexOf("Z");
 
+        // theMessage should be X###Y###Z###
+        x = theMessage.substring(xIndex + 1, yIndex);
+        y = theMessage.substring(yIndex + 1, zIndex);
+        z = theMessage.substring(zIndex + 1);
 
+        signalInX = x.toInt() - 64;
+        signalInY = y.toInt() - 64;
+        signalInZ = z.toInt() - 64;
 
+        //running the methods that edit the servo values
+        steering();
+        throttle();
+        stabilization();
 
+        Serial.print("AcX = "); Serial.print(AcX);
+        Serial.print(" | AcY = "); Serial.print(AcY);
+        Serial.print(" | AcZ = "); Serial.print(AcZ);
+        Serial.print(" | Tmp = "); Serial.print(Tmp / 340.00 + 36.53); //equation for temperature in degrees C from datasheet
+        Serial.print(" | GyX = "); Serial.print(GyX);
+        Serial.print(" | GyY = "); Serial.print(GyY);
+        Serial.print(" | GyZ = "); Serial.println(GyZ);
 
-
-
-
-
-
-
-      motorOn = false;
-       lastmotorInS = 0;
-       lastmotorInT = 0;
-       lastmotorInU = 0;
-       lastmotorInV = 0;
-       
-       s.write(0);
-       t.write(0);
-       u.write(0);
-       v.write(0);
-    }
-    else if (theChar != ('C'))
-    {
-      //x.concat(theChar);  huh? why is this here....
-      theMessage.concat(theChar);
-      delay(2);
-    }
-    
-    else
-    {
-      //Serial.println(theMessage); -- debug purposes
-
-      xIndex = theMessage.indexOf("X");
-      yIndex = theMessage.indexOf("Y");
-      zIndex = theMessage.indexOf("Z");
-
-      // theMessage should be X###Y###Z###
-      x = theMessage.substring(xIndex + 1, yIndex);
-      y = theMessage.substring(yIndex + 1, zIndex);
-      z = theMessage.substring(zIndex + 1);
-
-      signalInX = x.toInt() - 64;
-      signalInY = y.toInt() - 64;
-      signalInZ = z.toInt() - 64;
-
-
-
-
-      //running the methods that edit the servo values
-      steering();
-      throttle();
-      stabilization();
-
-  Serial.print("AcX = "); Serial.print(AcX);
-  Serial.print(" | AcY = "); Serial.print(AcY);
-  Serial.print(" | AcZ = "); Serial.print(AcZ);
-  Serial.print(" | Tmp = "); Serial.print(Tmp/340.00+36.53);  //equation for temperature in degrees C from datasheet
-  Serial.print(" | GyX = "); Serial.print(GyX);
-  Serial.print(" | GyY = "); Serial.print(GyY);
-  Serial.print(" | GyZ = "); Serial.println(GyZ);
-
-
-      //Capping the value output to 179 to prevent accidental unwanted calibration
-      /*
-      if (motorInS >= 180)
-        motorInS = 179;
-      if (motorInU >= 180)
-        motorInU = 179;
-      if (motorInV >= 180)
-        motorInV = 179;
-      if (motorInT >= 180)
-        motorInT = 179;
-        */
+        //Capping the value output to 179 to prevent accidental unwanted calibration
+        /*
+        if (motorInS >= 180)
+          motorInS = 179;
+        if (motorInU >= 180)
+          motorInU = 179;
+        if (motorInV >= 180)
+          motorInV = 179;
+        if (motorInT >= 180)
+          motorInT = 179;
+          */
         // Capping the value output to 1 for testing
         if (motorInS >= 50)
-        motorInS = 50;
-      if (motorInU >= 50)
-        motorInU = 50;
-      if (motorInV >= 50)
-        motorInV = 50;
-      if (motorInT >= 50)
-        motorInT = 50;  
-        
-        
-      //Experimental spike protection
-      if (fabs(motorInS-lastmotorInS)>30)
-        motorInS = lastmotorInS;
-      if (fabs(motorInU-lastmotorInU)>30)
-        motorInU = lastmotorInU;
-      if (fabs(motorInT-lastmotorInT)>30)
-        motorInT = lastmotorInT;
-      if (fabs(motorInV-lastmotorInV)>30)
-        motorInV = lastmotorInV;
+          motorInS = 50;
+        if (motorInU >= 50)
+          motorInU = 50;
+        if (motorInV >= 50)
+          motorInV = 50;
+        if (motorInT >= 50)
+          motorInT = 50;
 
-      //Writing them servo values to the servos
-      s.write(motorInS);
-      t.write(motorInT);
-      u.write(motorInU);
-      v.write(motorInV);
+        //Experimental spike protection
+        if (fabs(motorInS - lastmotorInS) > 30)
+          motorInS = lastmotorInS;
+        if (fabs(motorInU - lastmotorInU) > 30)
+          motorInU = lastmotorInU;
+        if (fabs(motorInT - lastmotorInT) > 30)
+          motorInT = lastmotorInT;
+        if (fabs(motorInV - lastmotorInV) > 30)
+          motorInV = lastmotorInV;
 
-      //temporarily storing the values
-      lastmotorInS = motorInS;
-      lastmotorInU = motorInU;
-      lastmotorInT = motorInT;
-      lastmotorInV = motorInV;
+        //Writing them servo values to the servos
+        s.write(motorInS);
+        t.write(motorInT);
+        u.write(motorInU);
+        v.write(motorInV);
 
-      //Readout of what's being sent do the Servos
-      Serial.print("motorInS: "); Serial.println(motorInS);
-      Serial.print("motorInT: "); Serial.println(motorInT);
-      Serial.print("motorInU: "); Serial.println(motorInU);
-      Serial.print("motorInV: "); Serial.println(motorInV);
+        //temporarily storing the values
+        lastmotorInS = motorInS;
+        lastmotorInU = motorInU;
+        lastmotorInT = motorInT;
+        lastmotorInV = motorInV;
 
-      theMessage = "";
+        //Readout of what's being sent do the Servos
+        Serial.print("motorInS: "); Serial.println(motorInS);
+        Serial.print("motorInT: "); Serial.println(motorInT);
+        Serial.print("motorInU: "); Serial.println(motorInU);
+        Serial.print("motorInV: "); Serial.println(motorInV);
+
+        theMessage = "";
+      }
     }
-
-  }
-  else //if no radio
-  {
-    //    Serial.println("No Radio.");
-    //    Serial.println(lastmotorInS);
-    //    Serial.println(lastmotorInT);
-    //    Serial.println(lastmotorInU);
-    //    Serial.println(lastmotorInV);
-    //
-    s.write(lastmotorInS);
-    t.write(lastmotorInT);
-    u.write(lastmotorInU);
-    v.write(lastmotorInV);
-  }
+    else //if no radio
+    {
+      //    Serial.println("No Radio.");
+      //    Serial.println(lastmotorInS);
+      //    Serial.println(lastmotorInT);
+      //    Serial.println(lastmotorInU);
+      //    Serial.println(lastmotorInV);
+      //
+      s.write(lastmotorInS);
+      t.write(lastmotorInT);
+      u.write(lastmotorInU);
+      v.write(lastmotorInV);
+    }
   }
 }
