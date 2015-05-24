@@ -484,7 +484,7 @@ void loop() //loops and runs the methods, writes servo values
         Serial.print(" | GyX = "); Serial.print(GyX);
         Serial.print(" | GyY = "); Serial.print(GyY);
         Serial.print(" | GyZ = "); Serial.println(GyZ);
-        Serial.print(" | compAngleX = "); Serial.println(compAngleX);
+        Serial.print(" | compAngleX = "); Serial.print(compAngleX);
         Serial.print(" | compAngleY = "); Serial.println(compAngleY);
         Serial.println(" ");
 
