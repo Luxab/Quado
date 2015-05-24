@@ -346,7 +346,7 @@ void stabilization()
     v - ccw - 4
   */
 
-  // TODO: correct which motors use what 
+  // TODO: correct which motors use what
   tempStableS = mRoll * rollGain;
   tempStableT = mPitch * pitchGain;
   tempStableU = mPitch * pitchGain;
@@ -484,6 +484,9 @@ void loop() //loops and runs the methods, writes servo values
         Serial.print(" | GyX = "); Serial.print(GyX);
         Serial.print(" | GyY = "); Serial.print(GyY);
         Serial.print(" | GyZ = "); Serial.println(GyZ);
+        Serial.print(" | compAngleX = "); Serial.println(compAngleX);
+        Serial.print(" | compAngleY = "); Serial.println(compAngleY);
+        Serial.println(" ");
 
         //Capping the value output to 179 to prevent accidental unwanted calibration
         /*
