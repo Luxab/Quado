@@ -501,14 +501,14 @@ void loop() //loops and runs the methods, writes servo values
           motorInT = 179;
           */
         // Capping the value output to 1 for testing
-        if (motorInS >= 50)
-          motorInS = 50;
-        if (motorInU >= 50)
-          motorInU = 50;
-        if (motorInV >= 50)
-          motorInV = 50;
-        if (motorInT >= 50)
-          motorInT = 50;
+        if (motorInS >= 8)
+          motorInS = 8;
+        if (motorInU >= 8)
+          motorInU = 8;
+        if (motorInV >= 8)
+          motorInV = 8;
+        if (motorInT >= 8)
+          motorInT = 8;
 
         //Experimental spike protection
         if (fabs(motorInS - lastmotorInS) > 30)
