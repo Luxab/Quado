@@ -39,21 +39,22 @@ double dt; // delta time
 uint32_t timer;
 uint8_t i2cData[14]; // buffer for I2C data
 
-const int MPU = 0x68; // I2C address of the MPU-6050
+//const int MPU = 0x68; // I2C address of the MPU-6050
 // below used to be int16_t
 double AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // IMU data
 
 Servo s, t, u, v;
-bool on = true;
-int val = 0; // Data received from the serial port
+//bool on = true;
+//int val = 0; // Data received from the serial port
 int lastmotorInS = 0, lastmotorInU = 0,
     lastmotorInV = 0, lastmotorInT = 0;
 String x = "", y = "", z = "";
 int xIndex = 0, yIndex = 0, zIndex = 0;
 String nextLoop = "";
-int decDir = 180; // for x - y changing position
-bool motorIn = true, motorOn = true;
-byte send;
+//int decDir = 180; // for x - y changing position
+//bool motorIn = true, motorOn = true;
+bool motorOn = true;
+//byte send;
 byte addresses[][6] = {"1Node", "2Node"};
 const uint64_t pipe = uint64_t(addresses);
 int msg[15];
