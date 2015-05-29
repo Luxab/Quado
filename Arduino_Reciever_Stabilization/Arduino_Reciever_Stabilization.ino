@@ -40,7 +40,8 @@ uint32_t timer;
 uint8_t i2cData[14]; // buffer for I2C data
 
 const int MPU = 0x68; // I2C address of the MPU-6050
-int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // IMU data
+// below used to be int16_t
+double AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ; // IMU data
 
 Servo s, t, u, v;
 bool on = true;
@@ -109,7 +110,7 @@ void setup() {
     while (1);
   }
 
-  delay(100); // wait for sensor to stabilize
+  delay(200); // wait for sensor to stabilize
 
   /* Set kalman and gyro starting angle */
   while (i2cRead(0x3B, i2cData, 6));
@@ -170,7 +171,7 @@ void setup() {
 /*
  updates instance fields with data from IMU
  should be called BEFORE ComplementaryFilter() is called
- currently called in stabalization()
+ currently called in stabilization()
 */
 void updateIMU() {
   // update values
@@ -190,7 +191,7 @@ void updateIMU() {
 /*
   resets gyro angle if it drifts too much.
   should be called AFTER ComplementaryFilter() is called
-  currently called in stabalization()
+  currently called in stabilization()
   returns true if gyro drift was fixed
 */
 bool fixGyroDrift() {
@@ -267,8 +268,8 @@ void ComplementaryFilter() {
   compAngleX = 0.93 * (compAngleX + gyroXrate * dt) + 0.07 * roll;
 #endif
 
-  gyroXangle += gyroXrate * dt; // Calculate gyro angle without any filter
-  gyroYangle += gyroYrate * dt;
+  //gyroXangle += gyroXrate * dt; // Calculate gyro angle without any filter
+  //gyroYangle += gyroYrate * dt;
   mPitch = pitch;
   mRoll = roll;
   //gyroXangle += kalmanX.getRate() * dt; // Calculate gyro angle using the unbiased rate
@@ -336,8 +337,8 @@ void stabilization()
   // gain is sensitivity of stabilization
   // TODO: gain is set to arbitrary numbers, please determine values
   // http://technicaladventure.blogspot.com/2012/09/quadcopter-stabilization-control-system.html
-  double pitchGain = 0.05;
-  double rollGain = 0.05;
+  double pitchGain = 0.5;
+  double rollGain = 0.5;
 
   /*
     s - ccw - 1
