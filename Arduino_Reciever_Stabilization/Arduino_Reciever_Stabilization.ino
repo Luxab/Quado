@@ -354,9 +354,9 @@ void stabilization()
   tempStableU = mPitch * pitchGain;
   tempStableV = mRoll * rollGain;
 
-  motorInS -= tempStableS;
+  motorInS += tempStableS;
   motorInT += tempStableT;
-  motorInU -= tempStableU;
+  motorInU += tempStableU;
   motorInV += tempStableV;
 }
 
@@ -438,7 +438,7 @@ void loop() //loops and runs the methods, writes servo values
       {
         //stabilization();
       }
-      else if (theChar == ('K') || AcZ < 0)
+      else if (theChar == ('K'))
       {
         motorOn = false;
         lastmotorInS = 0;
