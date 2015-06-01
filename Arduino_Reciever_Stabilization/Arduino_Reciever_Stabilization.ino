@@ -477,6 +477,20 @@ void loop() //loops and runs the methods, writes servo values
         //running the methods that edit the servo values
         steering();
         throttle();
+
+
+
+        // Capping the value output to 1 for testing
+        if (motorInS >= 30)
+          motorInS = 30;
+        if (motorInU >= 30)
+          motorInU = 30;
+        if (motorInV >= 30)
+          motorInV = 30;
+        if (motorInT >= 30)
+          motorInT = 30;
+
+        //Moved stabilization() to AFTER the motor input cap
         stabilization();
 
         Serial.print("AcX = "); Serial.print(AcX);
@@ -491,7 +505,7 @@ void loop() //loops and runs the methods, writes servo values
         Serial.println(" ");
 
         //Capping the value output to 179 to prevent accidental unwanted calibration
-        /*
+        //Uncommented the cap
         if (motorInS >= 180)
           motorInS = 179;
         if (motorInU >= 180)
@@ -500,16 +514,7 @@ void loop() //loops and runs the methods, writes servo values
           motorInV = 179;
         if (motorInT >= 180)
           motorInT = 179;
-          */
-        // Capping the value output to 1 for testing
-        if (motorInS >= 8)
-          motorInS = 8;
-        if (motorInU >= 8)
-          motorInU = 8;
-        if (motorInV >= 8)
-          motorInV = 8;
-        if (motorInT >= 8)
-          motorInT = 8;
+
 
         //Experimental spike protection
         if (fabs(motorInS - lastmotorInS) > 30)
