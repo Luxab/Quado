@@ -354,9 +354,9 @@ void stabilization()
   tempStableU = mPitch * pitchGain;
   tempStableV = mRoll * rollGain;
 
-  motorInS += tempStableS;
+  motorInS -= tempStableS;
   motorInT += tempStableT;
-  motorInU += tempStableU;
+  motorInU -= tempStableU;
   motorInV += tempStableV;
 }
 
@@ -415,7 +415,7 @@ void throttle()
 
 void loop() //loops and runs the methods, writes servo values
 {
-  
+
   // DEBUGGING PURPOSES
   stabilization();
 
@@ -428,26 +428,18 @@ void loop() //loops and runs the methods, writes servo values
   Serial.print(" | GyZ = "); Serial.println(GyZ);
   Serial.print(" | compAngleX = "); Serial.print(compAngleX);
   Serial.print(" | compAngleY = "); Serial.println(compAngleY);
+  Serial.print(" | mRoll = " ); Serial.print(mRoll);
+  Serial.print(" | mPitch = " ); Serial.println(mPitch);
   Serial.println(" ");
 
   Serial.println(tempStableS); Serial.println(tempStableT);
   Serial.println(tempStableU); Serial.println(tempStableV);
 
-  /*
-  // NO KILL SWITCH -- DEBUG PURPOSES
-    s.write(5);
-    t.write(5);
-    u.write(5);
-    v.write(5);
-  
-  
-  */
-
-
+  delay(2000);
 
   /*
   // MAIN CODE
-  
+
     //  if(count<51)
     //  {
     //   count ++;
