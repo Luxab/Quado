@@ -415,150 +415,183 @@ void throttle()
 
 void loop() //loops and runs the methods, writes servo values
 {
+  
+  // DEBUGGING PURPOSES
+  stabilization();
 
-  //  if(count<51)
-  //  {
-  //   count ++;
-  //  }
-  signalInX = 0, signalInY = 0, signalInZ = 0;
-  motorInS = 0, motorInU = 0,
-  motorInT = 0, motorInV = 0, motorInZ = 0;
-  motorInX = 0, motorInY = 0;
-  if (motorOn)
-  {
-    if (radio.available())
+  Serial.print("AcX = "); Serial.print(AcX);
+  Serial.print(" | AcY = "); Serial.print(AcY);
+  Serial.print(" | AcZ = "); Serial.print(AcZ);
+  Serial.print(" | Tmp = "); Serial.print(Tmp / 340.00 + 36.53); //equation for temperature in degrees C from datasheet
+  Serial.print(" | GyX = "); Serial.print(GyX);
+  Serial.print(" | GyY = "); Serial.print(GyY);
+  Serial.print(" | GyZ = "); Serial.println(GyZ);
+  Serial.print(" | compAngleX = "); Serial.print(compAngleX);
+  Serial.print(" | compAngleY = "); Serial.println(compAngleY);
+  Serial.println(" ");
+
+  Serial.println(tempStableS); Serial.println(tempStableT);
+  Serial.println(tempStableU); Serial.println(tempStableV);
+
+  /*
+  // NO KILL SWITCH -- DEBUG PURPOSES
+    s.write(5);
+    t.write(5);
+    u.write(5);
+    v.write(5);
+  
+  
+  */
+
+
+
+  /*
+  // MAIN CODE
+  
+    //  if(count<51)
+    //  {
+    //   count ++;
+    //  }
+    signalInX = 0, signalInY = 0, signalInZ = 0;
+    motorInS = 0, motorInU = 0,
+    motorInT = 0, motorInV = 0, motorInZ = 0;
+    motorInX = 0, motorInY = 0;
+    if (motorOn)
     {
-      radio.read(msg, 1);
-
-      char theChar = msg[0];
-
-      //Serial.println(theChar); -- debug purposes
-
-      if (theChar == ('S'))
+      if (radio.available())
       {
-        //stabilization();
+        radio.read(msg, 1);
+
+        char theChar = msg[0];
+
+        //Serial.println(theChar); -- debug purposes
+
+        if (theChar == ('S'))
+        {
+          //stabilization();
+        }
+        else if (theChar == ('K'))
+        {
+          motorOn = false;
+          lastmotorInS = 0;
+          lastmotorInT = 0;
+          lastmotorInU = 0;
+          lastmotorInV = 0;
+
+          s.write(0);
+          t.write(0);
+          u.write(0);
+          v.write(0);
+        }
+        else if (theChar != ('C'))
+        {
+          //x.concat(theChar);  huh? why is this here....
+          theMessage.concat(theChar);
+          delay(2);
+        }
+        else
+        {
+          //Serial.println(theMessage); -- debug purposes
+
+          xIndex = theMessage.indexOf("X");
+          yIndex = theMessage.indexOf("Y");
+          zIndex = theMessage.indexOf("Z");
+
+          // theMessage should be X###Y###Z###
+          x = theMessage.substring(xIndex + 1, yIndex);
+          y = theMessage.substring(yIndex + 1, zIndex);
+          z = theMessage.substring(zIndex + 1);
+
+          signalInX = x.toInt() - 64;
+          signalInY = y.toInt() - 64;
+          signalInZ = z.toInt() - 64;
+
+          //running the methods that edit the servo values
+          steering();
+          throttle();
+
+
+
+          // Capping the value output to 1 for testing
+          if (motorInS >= 30)
+            motorInS = 30;
+          if (motorInU >= 30)
+            motorInU = 30;
+          if (motorInV >= 30)
+            motorInV = 30;
+          if (motorInT >= 30)
+            motorInT = 30;
+
+          //Moved stabilization() to AFTER the motor input cap
+          stabilization();
+
+          Serial.print("AcX = "); Serial.print(AcX);
+          Serial.print(" | AcY = "); Serial.print(AcY);
+          Serial.print(" | AcZ = "); Serial.print(AcZ);
+          Serial.print(" | Tmp = "); Serial.print(Tmp / 340.00 + 36.53); //equation for temperature in degrees C from datasheet
+          Serial.print(" | GyX = "); Serial.print(GyX);
+          Serial.print(" | GyY = "); Serial.print(GyY);
+          Serial.print(" | GyZ = "); Serial.println(GyZ);
+          Serial.print(" | compAngleX = "); Serial.print(compAngleX);
+          Serial.print(" | compAngleY = "); Serial.println(compAngleY);
+          Serial.println(" ");
+
+          //Capping the value output to 179 to prevent accidental unwanted calibration
+          //Uncommented the cap
+          if (motorInS >= 180)
+            motorInS = 179;
+          if (motorInU >= 180)
+            motorInU = 179;
+          if (motorInV >= 180)
+            motorInV = 179;
+          if (motorInT >= 180)
+            motorInT = 179;
+
+
+          //Experimental spike protection
+          if (fabs(motorInS - lastmotorInS) > 30)
+            motorInS = lastmotorInS;
+          if (fabs(motorInU - lastmotorInU) > 30)
+            motorInU = lastmotorInU;
+          if (fabs(motorInT - lastmotorInT) > 30)
+            motorInT = lastmotorInT;
+          if (fabs(motorInV - lastmotorInV) > 30)
+            motorInV = lastmotorInV;
+
+          //Writing them servo values to the servos
+          s.write(motorInS);
+          t.write(motorInT);
+          u.write(motorInU);
+          v.write(motorInV);
+
+          //temporarily storing the values
+          lastmotorInS = motorInS;
+          lastmotorInU = motorInU;
+          lastmotorInT = motorInT;
+          lastmotorInV = motorInV;
+
+          //Readout of what's being sent do the Servos
+          Serial.print("motorInS: "); Serial.println(motorInS);
+          Serial.print("motorInT: "); Serial.println(motorInT);
+          Serial.print("motorInU: "); Serial.println(motorInU);
+          Serial.print("motorInV: "); Serial.println(motorInV);
+
+          theMessage = "";
+        }
       }
-      else if (theChar == ('K'))
+      else //if no radio
       {
-        motorOn = false;
-        lastmotorInS = 0;
-        lastmotorInT = 0;
-        lastmotorInU = 0;
-        lastmotorInV = 0;
-
-        s.write(0);
-        t.write(0);
-        u.write(0);
-        v.write(0);
-      }
-      else if (theChar != ('C'))
-      {
-        //x.concat(theChar);  huh? why is this here....
-        theMessage.concat(theChar);
-        delay(2);
-      }
-      else
-      {
-        //Serial.println(theMessage); -- debug purposes
-
-        xIndex = theMessage.indexOf("X");
-        yIndex = theMessage.indexOf("Y");
-        zIndex = theMessage.indexOf("Z");
-
-        // theMessage should be X###Y###Z###
-        x = theMessage.substring(xIndex + 1, yIndex);
-        y = theMessage.substring(yIndex + 1, zIndex);
-        z = theMessage.substring(zIndex + 1);
-
-        signalInX = x.toInt() - 64;
-        signalInY = y.toInt() - 64;
-        signalInZ = z.toInt() - 64;
-
-        //running the methods that edit the servo values
-        steering();
-        throttle();
-
-
-
-        // Capping the value output to 1 for testing
-        if (motorInS >= 30)
-          motorInS = 30;
-        if (motorInU >= 30)
-          motorInU = 30;
-        if (motorInV >= 30)
-          motorInV = 30;
-        if (motorInT >= 30)
-          motorInT = 30;
-
-        //Moved stabilization() to AFTER the motor input cap
-        stabilization();
-
-        Serial.print("AcX = "); Serial.print(AcX);
-        Serial.print(" | AcY = "); Serial.print(AcY);
-        Serial.print(" | AcZ = "); Serial.print(AcZ);
-        Serial.print(" | Tmp = "); Serial.print(Tmp / 340.00 + 36.53); //equation for temperature in degrees C from datasheet
-        Serial.print(" | GyX = "); Serial.print(GyX);
-        Serial.print(" | GyY = "); Serial.print(GyY);
-        Serial.print(" | GyZ = "); Serial.println(GyZ);
-        Serial.print(" | compAngleX = "); Serial.print(compAngleX);
-        Serial.print(" | compAngleY = "); Serial.println(compAngleY);
-        Serial.println(" ");
-
-        //Capping the value output to 179 to prevent accidental unwanted calibration
-        //Uncommented the cap
-        if (motorInS >= 180)
-          motorInS = 179;
-        if (motorInU >= 180)
-          motorInU = 179;
-        if (motorInV >= 180)
-          motorInV = 179;
-        if (motorInT >= 180)
-          motorInT = 179;
-
-
-        //Experimental spike protection
-        if (fabs(motorInS - lastmotorInS) > 30)
-          motorInS = lastmotorInS;
-        if (fabs(motorInU - lastmotorInU) > 30)
-          motorInU = lastmotorInU;
-        if (fabs(motorInT - lastmotorInT) > 30)
-          motorInT = lastmotorInT;
-        if (fabs(motorInV - lastmotorInV) > 30)
-          motorInV = lastmotorInV;
-
-        //Writing them servo values to the servos
-        s.write(motorInS);
-        t.write(motorInT);
-        u.write(motorInU);
-        v.write(motorInV);
-
-        //temporarily storing the values
-        lastmotorInS = motorInS;
-        lastmotorInU = motorInU;
-        lastmotorInT = motorInT;
-        lastmotorInV = motorInV;
-
-        //Readout of what's being sent do the Servos
-        Serial.print("motorInS: "); Serial.println(motorInS);
-        Serial.print("motorInT: "); Serial.println(motorInT);
-        Serial.print("motorInU: "); Serial.println(motorInU);
-        Serial.print("motorInV: "); Serial.println(motorInV);
-
-        theMessage = "";
+        //    Serial.println("No Radio.");
+        //    Serial.println(lastmotorInS);
+        //    Serial.println(lastmotorInT);
+        //    Serial.println(lastmotorInU);
+        //    Serial.println(lastmotorInV);
+        //
+        s.write(lastmotorInS);
+        t.write(lastmotorInT);
+        u.write(lastmotorInU);
+        v.write(lastmotorInV);
       }
     }
-    else //if no radio
-    {
-      //    Serial.println("No Radio.");
-      //    Serial.println(lastmotorInS);
-      //    Serial.println(lastmotorInT);
-      //    Serial.println(lastmotorInU);
-      //    Serial.println(lastmotorInV);
-      //
-      s.write(lastmotorInS);
-      t.write(lastmotorInT);
-      u.write(lastmotorInU);
-      v.write(lastmotorInV);
-    }
-  }
+  */
 }
