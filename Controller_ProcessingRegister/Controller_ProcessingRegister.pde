@@ -59,10 +59,15 @@ public void setup() {
 // Poll for user input called from the draw() method.
 public void getUserInput() {
   //px = map(device.getSlider("X-axis").getValue(), -1, 1, 0, width);
-  flyUp = map(device.getSlider("Y Rotation").getValue()/1.725, -1, 1, 0, height);
-  flyX = map(device.getSlider("X Axis").getValue()/1.725, -1, 1, 0, width);
-  flyY = map(device.getSlider("Y Axis").getValue()/1.725,-1, 1, 0, height);
+  //flyUp = map(device.getSlider("Y Rotation").getValue()/1.725, -1, 1, 0, height);
+  //flyX = map(device.getSlider("X Axis").getValue()/1.725, -1, 1, 0, width);
+  //flyY = map(device.getSlider("Y Axis").getValue()/1.725,-1, 1, 0, height);
   // max speed at 179.94202
+  int divisor = 28;
+  
+  flyUp = map(device.getSlider("Y Rotation").getValue()/divisor, -1, 1, 0, height);
+  flyX = map(device.getSlider("X Axis").getValue()/divisor, -1, 1, 0, width);
+  flyY = map(device.getSlider("Y Axis").getValue()/divisor,-1, 1, 0, height);
 
   
   // default is at 200, 0 is max(up), 400 min(down)
@@ -149,6 +154,9 @@ public void serialEvent( Serial myPort) {
       
       //println("SENDING - sendX: " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
       //myPort.write(); // hopefully sends "A" or "B" but may send jibberish or numbers
+      //flyUpX = 68;
+      //flyUpZ = 68;
+      //flyUpY = 68;
       myPort.write("X"+flyUpX+"Y"+flyUpY+"Z"+flyUpZ); // sends X,Y,Z to Serial
       //println("SENT - sendX:    " +sendX+ "  sendY: " +sendY+ "  sendZ : " + sendZ);
       println("SENT - sendX: " +flyUpX+ " sendY: " +flyUpY+ " sendZ: " +flyUpZ);

@@ -417,6 +417,7 @@ void loop() //loops and runs the methods, writes servo values
 {
 
   // DEBUGGING PURPOSES
+  /*
   stabilization();
 
   Serial.print("AcX = "); Serial.print(AcX);
@@ -432,12 +433,20 @@ void loop() //loops and runs the methods, writes servo values
   Serial.print(" | mPitch = " ); Serial.println(mPitch);
   Serial.println(" ");
 
-  Serial.println(tempStableS); Serial.println(tempStableT);
-  Serial.println(tempStableU); Serial.println(tempStableV);
+  Serial.print("tempStableS: "); Serial.println(tempStableS); 
+  Serial.print("tempStableT: "); Serial.println(tempStableT);
+  Serial.print("tempStableU: "); Serial.println(tempStableU); 
+  Serial.print("tempStableV: "); Serial.println(tempStableV);
+  
+  Serial.print("motorInS: "); Serial.println(motorInS);
+  Serial.print("motorInT: "); Serial.println(motorInT);
+  Serial.print("motorInU: "); Serial.println(motorInU);
+  Serial.print("motorInV: "); Serial.println(motorInV);
 
   delay(2000);
-
-  /*
+  */
+  
+  
   // MAIN CODE
 
     //  if(count<51)
@@ -505,14 +514,14 @@ void loop() //loops and runs the methods, writes servo values
 
 
           // Capping the value output to 1 for testing
-          if (motorInS >= 30)
-            motorInS = 30;
-          if (motorInU >= 30)
-            motorInU = 30;
-          if (motorInV >= 30)
-            motorInV = 30;
-          if (motorInT >= 30)
-            motorInT = 30;
+          if (motorInS >= 8)
+            motorInS = 8;
+          if (motorInU >= 8)
+            motorInU = 8;
+          if (motorInV >= 8)
+            motorInV = 8;
+          if (motorInT >= 8)
+            motorInT = 8;
 
           //Moved stabilization() to AFTER the motor input cap
           stabilization();
@@ -585,5 +594,5 @@ void loop() //loops and runs the methods, writes servo values
         v.write(lastmotorInV);
       }
     }
-  */
+  
 }
