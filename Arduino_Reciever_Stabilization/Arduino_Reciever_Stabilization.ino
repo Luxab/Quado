@@ -60,6 +60,8 @@ const uint64_t pipe = uint64_t(addresses);
 int msg[15];
 String theMessage = "";
 
+int global;
+
 int count = 0;
 
 //some more instance fields
@@ -84,11 +86,24 @@ bool steerMode = true; // Are we steering, or should we be using the stablizatio
 // EDIT WHICH PINS THE RADIO WILL BE ON
 RF24 radio(9, 10);
 
+/* Interrupt Service Routine(ISR) If radio, write values to motor, if no radio do nothing.
+void pinChange()
+{
+  if( radio.available())
+  s.write(motorInS);
+  t.write(motorInT);
+  u.write(motorInU);
+  v.write(motorInV);
+}
+*/
+
 void setup() {
 
   radio.begin();
   Serial.begin(115200); // open the serial port at 9600 bps
-
+  
+  //attachInterrupt(2, pinChange, RISING); //attaches ISR 
+  
   Wire.begin();
   /*
   Wire.beginTransmission(MPU);
@@ -413,6 +428,26 @@ void throttle()
   motorInV += signalInZ;
 }
 
+void emergency()
+{
+  global++;
+  if(!radio.available()&& global>25000)
+  {
+    s.write(0);
+        t.write(0);
+        u.write(0);
+        v.write(0);
+        s.detach();
+        t.detach();
+        u.detach();
+        v.detach();
+  }
+  if(radio.available())
+  {
+    global =0;
+  }
+}
+
 void loop() //loops and runs the methods, writes servo values
 {
 
@@ -462,7 +497,6 @@ void loop() //loops and runs the methods, writes servo values
       if (radio.available())
       {
         radio.read(msg, 1);
-
         char theChar = msg[0];
 
         //Serial.println(theChar); -- debug purposes
@@ -593,6 +627,7 @@ void loop() //loops and runs the methods, writes servo values
         u.write(0);
         v.write(0);
       }
+      emergency();
     }
   
 }
