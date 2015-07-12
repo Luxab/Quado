@@ -588,10 +588,10 @@ void loop() //loops and runs the methods, writes servo values
         //    Serial.println(lastmotorInU);
         //    Serial.println(lastmotorInV);
         //
-        s.write(0);
-        t.write(0);
-        u.write(0);
-        v.write(0);
+        s.write(lastmotorInS);
+        t.write(lastmotorInT);
+        u.write(lastmotorInU);
+        v.write(lastmotorInV);
       }
     }
   

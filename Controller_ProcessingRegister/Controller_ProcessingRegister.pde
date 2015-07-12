@@ -63,7 +63,7 @@ public void getUserInput() {
   //flyX = map(device.getSlider("X Axis").getValue()/1.725, -1, 1, 0, width);
   //flyY = map(device.getSlider("Y Axis").getValue()/1.725,-1, 1, 0, height);
   // max speed at 179.94202
-  int divisor = 4;
+  int divisor = 28;
   
   flyUp = map(device.getSlider("Y Rotation").getValue()/divisor, -1, 1, 0, height);
   flyX = map(device.getSlider("X Axis").getValue()/divisor, -1, 1, 0, width);
