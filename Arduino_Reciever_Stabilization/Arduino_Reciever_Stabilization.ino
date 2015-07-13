@@ -384,24 +384,28 @@ void steering()
 
   if (signalInX < 0)
   {
-    motorInS = (signalInX * -1) - 5;
-    motorInU = signalInX * -1;
+    //motorInS = signalInX*-1;
+    //motorInU = signalInX*-1;
+    motorInT = signalInX*-1;
+    motorInV = signalInX*-1;
   }
   else if (signalInX > 0)
   {
+    //motorInT = signalInX;
+    //motorInV = signalInX;
     motorInS = signalInX;
-    motorInU = signalInX - 5;
+    motorInU = signalInX;
   }
 
   if (signalInY < 0)
   {
-    motorInV = (signalInY * -1) - 5;
-    motorInT = (signalInY * -1);
+    motorInU = signalInY*-1;
+    motorInV = signalInY*-1;
   }
   else if (signalInY > 0)
   {
-    motorInV = signalInY;
-    motorInT = signalInY - 5;
+    motorInT = signalInY;
+    motorInS = signalInY;
   }
 
   // if Right Controller Stick is moved Down - signalInZ = 0
@@ -548,17 +552,19 @@ void loop() //loops and runs the methods, writes servo values
 
 
           // Capping the value output to 1 for testing
-          if (motorInS >= 8)
-            motorInS = 8;
-          if (motorInU >= 8)
-            motorInU = 8;
-          if (motorInV >= 8)
-            motorInV = 8;
-          if (motorInT >= 8)
-            motorInT = 8;
+          if (motorInS >= 80)
+            motorInS = 80;
+          if (motorInU >= 80)
+            motorInU = 80;
+          if (motorInV >= 80)
+            motorInV = 80;
+          if (motorInT >= 80)
+            motorInT = 80;
+            
+            
 
           //Moved stabilization() to AFTER the motor input cap
-          stabilization();
+          //stabilization();
 
           Serial.print("AcX = "); Serial.print(AcX);
           Serial.print(" | AcY = "); Serial.print(AcY);

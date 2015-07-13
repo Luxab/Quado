@@ -65,10 +65,22 @@ public void getUserInput() {
   // max speed at 179.94202
   int divisor = 4;
   
-  flyUp = map(device.getSlider("Y Rotation").getValue()/divisor, -1, 1, 0, height);
-  flyX = map(device.getSlider("X Axis").getValue()/divisor, -1, 1, 0, width);
-  flyY = map(device.getSlider("Y Axis").getValue()/divisor,-1, 1, 0, height);
+  flyUp = map(device.getSlider("Y Axis").getValue()/4, -1, 1, 0, height);
+  flyX = map(device.getSlider("X Rotation").getValue()/10, -1, 1, 0, width);
+  flyY = map(device.getSlider("Y Rotation").getValue()/10,-1, 1, 0, height);
 
+/*
+  if(flyX > 220)
+    flyX = 220;
+  if(flyX < 180)
+    flyX = 180;
+  if(flyY > 220)
+    flyY = 220;
+  if(flyY < 180)
+    flyY = 180;
+    
+    
+*/
   
   // default is at 200, 0 is max(up), 400 min(down)
 
